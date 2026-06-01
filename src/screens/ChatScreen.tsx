@@ -149,7 +149,7 @@ export function ChatScreen() {
   };
 
   return (
-    <Screen scroll={false}>
+    <Screen scroll={false} edges={['top', 'left', 'right', 'bottom']}>
       <HeaderBar title="Chat IA" />
       <KeyboardAvoidingView style={styles.chatShell} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
         <FlatList
@@ -422,7 +422,7 @@ function createStyles(colors: typeof appColors) {
       borderWidth: 1,
       flexDirection: 'row',
       gap: 8,
-      marginBottom: 18,
+      marginBottom: 24,
       padding: 8,
     },
     input: {
