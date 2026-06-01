@@ -171,8 +171,8 @@ export function WalletScreen() {
               activeOpacity={0.82}
               onPress={() => openAction(action.id)}
             >
-              <View style={[styles.actionTile, { backgroundColor: colors.primarySoft }]}>
-                <Icon color={colors.primary} size={24} strokeWidth={2.1} />
+              <View style={[styles.actionTile, { backgroundColor: '#d7ede9' }]}>
+                <Icon color="#00a86b" size={24} strokeWidth={2.1} />
               </View>
               <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.actionText, { color: colors.text }]}>
                 {action.label}
@@ -602,7 +602,7 @@ const styles = StyleSheet.create({
   },
   actionTile: {
     alignItems: 'center',
-    borderRadius: 18,
+    borderRadius: 20,
     height: 62,
     justifyContent: 'center',
     width: 62,

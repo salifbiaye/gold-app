@@ -1,23 +1,19 @@
 import {
-  Ambulance,
+  ArrowDownToLine,
   Bike,
-  BookOpen,
+  BriefcaseMedical,
   Building2,
-  Bus,
   Car,
+  CirclePlus,
   CreditCard,
-  HeartPulse,
-  Pill,
+  GraduationCap,
+  MoreHorizontal,
   Plane,
-  Plus,
   QrCode,
   Receipt,
   Send,
-  ShoppingCart,
-  Stethoscope,
-  Store,
+  Smartphone,
   Utensils,
-  WalletCards,
 } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 import { IconComponent } from '../types/icon';
@@ -51,25 +47,25 @@ type TransportOption = IconAction & {
 };
 
 export const popularServices: ServiceItem[] = [
-  { id: 'transport',   label: 'Transport',   icon: Bus,       tint: '#0DB574', route: 'Transport' },
-  { id: 'delivery',    label: 'Livraison',   icon: Bike,      tint: '#F97316', route: 'Delivery' },
-  { id: 'real-estate', label: 'Immobilier',  icon: Building2, tint: '#3B82F6', route: 'RealEstate' },
-  { id: 'health',      label: 'Santé',       icon: HeartPulse,tint: '#3388F2', route: 'Health' },
-  { id: 'food',        label: 'Alimentation',icon: Utensils,  tint: '#EAB308', route: 'Food' },
-  { id: 'education',   label: 'Education',   icon: BookOpen,  tint: '#8C54D9', route: 'Education' },
-  { id: 'tourism',     label: 'Tourisme',    icon: Plane,     tint: '#0EA5E9', route: 'Tourism' },
-  { id: 'payments',    label: 'Paiements',   icon: CreditCard,tint: '#6366F1', route: 'Payments' },
+  { id: 'transport',   label: 'Transport',   icon: Car,             tint: '#0DB574', route: 'Transport'  },
+  { id: 'delivery',    label: 'Livraison',   icon: Bike,            tint: '#F97316', route: 'Delivery'   },
+  { id: 'real-estate', label: 'Immobilier',  icon: Building2,       tint: '#6366F1', route: 'RealEstate' },
+  { id: 'health',      label: 'Santé',       icon: BriefcaseMedical,tint: '#3388F2', route: 'Health'     },
+  { id: 'food',        label: 'Alimentation',icon: Utensils,        tint: '#0DB574', route: 'Food'       },
+  { id: 'education',   label: 'Education',   icon: GraduationCap,   tint: '#8C54D9', route: 'Education'  },
+  { id: 'tourism',     label: 'Tourisme',    icon: Plane,           tint: '#F43F5E', route: 'Tourism'    },
+  { id: 'payments',    label: 'Paiements',   icon: CreditCard,      tint: '#6366F1', route: 'Payments'   },
 ];
 
 export const walletActions: IconAction[] = [
-  { id: 'transfer', label: 'Transférer', icon: Send },
-  { id: 'scan', label: 'Scanner QR', icon: QrCode },
-  { id: 'pay', label: 'Payer', icon: CreditCard },
-  { id: 'withdraw', label: 'Retirer', icon: WalletCards },
-  { id: 'topup', label: 'Recharger', icon: Plus },
-  { id: 'bills', label: 'Factures', icon: Receipt },
-  { id: 'credit', label: 'Crédit tél.', icon: CreditCard },
-  { id: 'more', label: 'Plus', icon: ShoppingCart },
+  { id: 'transfer', label: 'Transférer',  icon: Send             },
+  { id: 'scan',     label: 'Scanner QR',  icon: QrCode           },
+  { id: 'pay',      label: 'Payer',       icon: CreditCard       },
+  { id: 'withdraw', label: 'Retirer',     icon: ArrowDownToLine  },
+  { id: 'topup',    label: 'Recharger',   icon: CirclePlus       },
+  { id: 'bills',    label: 'Factures',    icon: Receipt          },
+  { id: 'credit',   label: 'Crédit tél.', icon: Smartphone       },
+  { id: 'more',     label: 'Plus',        icon: MoreHorizontal   },
 ];
 
 export const apartments = [

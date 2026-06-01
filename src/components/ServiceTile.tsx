@@ -15,8 +15,8 @@ export function ServiceTile({ label, icon: Icon, tint, onPress }: ServiceTilePro
 
   return (
     <PressScale style={styles.container} scaleTo={0.88} haptic="selection" onPress={onPress}>
-      <View style={[styles.badge, { backgroundColor: `${tint}18` }]}>
-        <Icon size={30} color={tint} strokeWidth={2.2} />
+      <View style={[styles.badge, { backgroundColor: `${tint}28` }]}>
+        <Icon size={28} color={tint} strokeWidth={2.2} />
       </View>
       <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.label, { color: colors.text }]}>
         {label}
@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
   },
   badge: {
     alignItems: 'center',
-    borderRadius: 18,
-    height: 58,
+    borderRadius: 20,
+    height: 62,
     justifyContent: 'center',
-    width: 58,
+    width: 62,
   },
   label: {
     fontSize: 11,
