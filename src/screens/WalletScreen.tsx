@@ -84,13 +84,13 @@ export function WalletScreen() {
     ? {
       gradient: ['#2E8C66', '#08744C'] as const,
       border: 'rgba(218,255,235,0.46)',
-      stage: '#10202B',
+      stage: 'transparent',
       shadowOpacity: 0.24,
     }
     : {
       gradient: ['#77C996', colors.primaryDark] as const,
       border: 'rgba(255,255,255,0.72)',
-      stage: '#d7ede9',
+      stage: 'transparent',
       shadowOpacity: 0.16,
     };
 
