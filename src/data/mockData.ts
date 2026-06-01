@@ -1,4 +1,5 @@
 import {
+  Ambulance,
   ArrowDownToLine,
   Bike,
   BriefcaseMedical,
@@ -8,12 +9,16 @@ import {
   CreditCard,
   GraduationCap,
   MoreHorizontal,
+  Pill,
   Plane,
   QrCode,
   Receipt,
   Send,
+  ShoppingCart,
   Smartphone,
+  Stethoscope,
   Utensils,
+  WalletCards,
 } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 import { IconComponent } from '../types/icon';
