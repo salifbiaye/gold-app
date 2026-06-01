@@ -9,7 +9,8 @@ import { SectionHeader } from '../components/SectionHeader';
 import { ServiceIntroCard } from '../components/ServiceIntroCard';
 
 import { useAppTheme } from '../context/ThemeContext';
-import { apartments } from '../data/mockData';
+import { getApartments } from '../services/realEstate/realEstateService';
+import { useRepositoryQuery } from '../hooks/useRepositoryQuery';
 import { colors as appColors } from '../theme/colors';
 
 const FILTERS = ['Tout', 'Appartement', 'Maison', 'Bureau'];
@@ -19,6 +20,7 @@ export function RealEstateScreen() {
   const { colors } = useAppTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [activeFilter, setActiveFilter] = useState(0);
+  const apartments = useRepositoryQuery(getApartments).data ?? [];
 
   return (
     <Screen edges={['left', 'right']}>
@@ -164,3 +166,4 @@ function createStyles(colors: typeof appColors) {
     },
   });
 }
+

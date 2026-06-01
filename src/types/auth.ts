@@ -9,6 +9,7 @@ export type AuthUser = {
   id: string;
   phone: string;
   token: string;
+  avatarUrl?: string | null;
 };
 
 export type AuthResult = {

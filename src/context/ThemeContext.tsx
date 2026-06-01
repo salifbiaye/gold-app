@@ -1,10 +1,10 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
-import { Appearance, useColorScheme } from 'react-native';
+import { Appearance, Platform, useColorScheme } from 'react-native';
 import { colors as lightColors } from '../theme/colors';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 
-const darkColors = {
+const nativeDarkColors = {
   ...lightColors,
   background: '#07141D',
   surface: '#10202B',
@@ -14,6 +14,19 @@ const darkColors = {
   border: '#223845',
   primarySoft: '#123F2D',
 };
+
+const webDarkColors = {
+  ...lightColors,
+  background: '#101314',
+  surface: '#171B1D',
+  surfaceMuted: '#202629',
+  text: '#F5F7F8',
+  muted: '#A2ADB3',
+  border: '#2A3337',
+  primarySoft: '#123628',
+};
+
+const darkColors = Platform.OS === 'web' ? webDarkColors : nativeDarkColors;
 
 type ThemeContextValue = {
   colors: typeof lightColors;

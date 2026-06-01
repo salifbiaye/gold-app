@@ -19,7 +19,7 @@ export function HeaderBar({ title, subtitle, back, right, onBack, onRight }: Hea
     <View style={styles.container}>
       {back ? (
         <TouchableOpacity style={styles.iconButton} activeOpacity={0.8} onPress={onBack}>
-          <ChevronLeft size={22} color={colors.text} />
+          <ChevronLeft size={25} color={colors.text} strokeWidth={2.4} />
         </TouchableOpacity>
       ) : (
         <View style={styles.iconButton} />
@@ -32,7 +32,7 @@ export function HeaderBar({ title, subtitle, back, right, onBack, onRight }: Hea
 
       {right ? (
         <TouchableOpacity style={styles.iconButton} activeOpacity={0.8} onPress={onRight}>
-          <RightIcon size={21} color={colors.text} />
+          <RightIcon size={24} color={colors.text} strokeWidth={2.35} />
           {right === 'bell' ? <View style={styles.dot} /> : null}
         </TouchableOpacity>
       ) : (
@@ -47,25 +47,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 12,
-    minHeight: 42,
+    minHeight: 50,
   },
   iconButton: {
     alignItems: 'center',
-    height: 34,
+    height: 42,
     justifyContent: 'center',
     position: 'relative',
-    width: 34,
+    width: 42,
   },
   titleWrap: {
     flex: 1,
   },
   title: {
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: 22,
+    fontWeight: '900',
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: 13,
+    fontWeight: '700',
     marginTop: 2,
     textAlign: 'center',
   },

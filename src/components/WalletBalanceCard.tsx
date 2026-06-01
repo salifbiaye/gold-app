@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Check, ChevronDown, Eye, EyeOff, MoreHorizontal, QrCode, RefreshCcw, ScanLine, Search, X } from 'lucide-react-native';
+import { Check, ChevronDown, Eye, EyeOff, MoreHorizontal, Plus, QrCode, Search, Send, X } from 'lucide-react-native';
 import { OperatorLogo } from './OperatorLogo';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -18,6 +18,7 @@ import { useScanner } from '../context/ScannerContext';
 import { useAppTheme } from '../context/ThemeContext';
 import { PressScale } from './PressScale';
 import { DeviceContact, useDeviceContacts } from '../hooks/useDeviceContacts';
+import { requestBiometricAuth } from '../services/security/biometricService';
 import { IconComponent } from '../types/icon';
 
 type SheetType = 'topup' | 'transfer' | null;
@@ -47,14 +48,22 @@ export function WalletBalanceCard() {
   const [activeSheet, setActiveSheet] = useState<SheetType>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  const openSheet = (type: SheetType) => {
+  const openSheet = async (type: SheetType) => {
+    if (type === 'transfer') {
+      const allowed = await requestBiometricAuth('Confirmer le transfert Wallet');
+      if (!allowed) return;
+    }
+
     setSubmitted(false);
     setActiveSheet(type);
   };
 
   const closeSheet = () => setActiveSheet(null);
 
-  const handleScan = () => {
+  const handleScan = async () => {
+    const allowed = await requestBiometricAuth('Autoriser le scan QR');
+    if (!allowed) return;
+
     openScanner({ onScanned: () => {}, onClose: () => {} });
   };
 
@@ -65,8 +74,8 @@ export function WalletBalanceCard() {
           <Text style={styles.label}>Solde Wallet</Text>
           <PressScale onPress={() => setHidden((v) => !v)} haptic="selection" scaleTo={0.85}>
             {hidden
-              ? <EyeOff color="rgba(255,255,255,0.85)" size={17} />
-              : <Eye color="rgba(255,255,255,0.85)" size={17} />}
+              ? <EyeOff color="rgba(255,255,255,0.85)" size={20} />
+              : <Eye color="rgba(255,255,255,0.85)" size={20} />}
           </PressScale>
         </View>
 
@@ -75,9 +84,9 @@ export function WalletBalanceCard() {
         </Text>
 
         <View style={styles.actions}>
-          <MiniAction icon={RefreshCcw} label="Recharger" onPress={() => openSheet('topup')} />
-          <MiniAction icon={ScanLine} label="Transférer" onPress={() => openSheet('transfer')} />
-          <MiniAction icon={QrCode} label="Scanner" onPress={handleScan} />
+          <MiniAction icon={Plus}          label="Recharger"  onPress={() => openSheet('topup')} />
+          <MiniAction icon={Send}          label="Transférer" onPress={() => openSheet('transfer')} />
+          <MiniAction icon={QrCode}        label="QR Code"    onPress={handleScan} />
           <MiniAction
             icon={MoreHorizontal}
             label="Plus"
@@ -207,7 +216,7 @@ type MiniActionProps = {
 function MiniAction({ icon: Icon, label, onPress }: MiniActionProps) {
   return (
     <PressScale style={styles.actionButton} onPress={onPress} haptic="medium" scaleTo={0.9}>
-      <Icon color="#FFFFFF" size={18} />
+      <Icon color="#FFFFFF" size={22} strokeWidth={2.35} />
       <Text style={styles.actionLabel}>{label}</Text>
     </PressScale>
   );
@@ -373,9 +382,9 @@ function SmartForm({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 14,
-    marginTop: 14,
-    padding: 16,
+    borderRadius: 18,
+    marginTop: 8,
+    padding: 18,
   },
   header: {
     alignItems: 'center',
@@ -384,15 +393,15 @@ const styles = StyleSheet.create({
   },
   label: {
     color: 'rgba(255,255,255,0.78)',
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '800',
   },
   amount: {
     color: '#FFFFFF',
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '900',
-    letterSpacing: 0.5,
-    marginTop: 7,
+    letterSpacing: 0,
+    marginTop: 5,
   },
   actions: {
     flexDirection: 'row',
@@ -402,14 +411,14 @@ const styles = StyleSheet.create({
   actionButton: {
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.18)',
-    borderRadius: 8,
+    borderRadius: 12,
     flex: 1,
-    gap: 4,
-    paddingVertical: 8,
+    gap: 5,
+    paddingVertical: 9,
   },
   actionLabel: {
     color: '#FFFFFF',
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: '800',
   },
   // Modal & sheet

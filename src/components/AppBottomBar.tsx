@@ -29,8 +29,8 @@ export function AppBottomBar({ active = 'Home' }: AppBottomBarProps) {
       {
         backgroundColor: colors.surface,
         borderTopColor: colors.border,
-        height: 56 + insets.bottom,
-        paddingBottom: Math.max(insets.bottom, 8),
+        height: 68 + insets.bottom,
+        paddingBottom: Math.max(insets.bottom, 10),
       },
     ]}>
       {items.map((item) => {
@@ -44,7 +44,7 @@ export function AppBottomBar({ active = 'Home' }: AppBottomBarProps) {
             style={styles.item}
             onPress={() => navigation.navigate('MainTabs', { screen: item.key })}
           >
-            <Icon color={isActive ? colors.primary : '#75808B'} size={21} strokeWidth={2.1} />
+            <Icon color={isActive ? colors.primary : colors.muted} size={25} strokeWidth={2.25} />
             <Text style={[styles.label, isActive && { color: colors.primary }]}>{item.label}</Text>
           </TouchableOpacity>
         );
@@ -59,17 +59,17 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingTop: 6,
+    paddingTop: 9,
   },
   item: {
     alignItems: 'center',
     flex: 1,
-    gap: 2,
+    gap: 4,
     justifyContent: 'center',
   },
   label: {
     color: '#75808B',
-    fontSize: 9,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '800',
   },
 });

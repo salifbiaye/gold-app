@@ -99,12 +99,12 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   scrollPad: {
-    paddingBottom: 12,
+    paddingBottom: 18,
   },
   padded: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
   },
   withBottomBar: {
-    paddingBottom: 70,
+    paddingBottom: 84,
   },
 });

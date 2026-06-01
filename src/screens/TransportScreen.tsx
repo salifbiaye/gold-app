@@ -9,7 +9,8 @@ import { Screen } from '../components/Screen';
 import { ServiceIntroCard } from '../components/ServiceIntroCard';
 
 import { useAppTheme } from '../context/ThemeContext';
-import { transportOptions } from '../data/mockData';
+import { getTransportOptions } from '../services/transport/transportService';
+import { useRepositoryQuery } from '../hooks/useRepositoryQuery';
 import { colors as appColors } from '../theme/colors';
 
 const ORIGIN = { lat: 14.7452, lng: -17.5131, label: 'Almadies' };
@@ -53,6 +54,7 @@ export function TransportScreen() {
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [selectedOption, setSelectedOption] = useState(0);
   const isDark = resolvedMode === 'dark';
+  const transportOptions = useRepositoryQuery(getTransportOptions).data ?? [];
 
   const selected = transportOptions[selectedOption];
   const routeMapHTML = buildRouteMapHTML(isDark);
@@ -125,9 +127,11 @@ export function TransportScreen() {
         })}
       </View>
 
-      <TouchableOpacity style={styles.confirm} activeOpacity={0.86}>
-        <Text style={styles.confirmText}>Confirmer · {selected.price}</Text>
-      </TouchableOpacity>
+      {selected ? (
+        <TouchableOpacity style={styles.confirm} activeOpacity={0.86}>
+          <Text style={styles.confirmText}>Confirmer · {selected.price}</Text>
+        </TouchableOpacity>
+      ) : null}
     </Screen>
   );
 }
@@ -297,3 +301,4 @@ function createStyles(colors: typeof appColors) {
     },
   });
 }
+

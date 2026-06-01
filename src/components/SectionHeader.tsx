@@ -27,15 +27,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 11,
-    marginTop: 18,
+    marginBottom: 10,
+    marginTop: 14,
   },
   title: {
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: 17,
+    fontWeight: '900',
   },
   action: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '800',
   },
 });

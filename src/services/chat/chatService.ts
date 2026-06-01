@@ -53,10 +53,13 @@ export async function sendMessage(
     return pickRandom(pool);
   }
 
-  const data = await apiRequest<{ reply: string }>(endpoints.ai.chat, {
-    method: 'POST',
-    body: JSON.stringify({ message, context: filter }),
-  });
+  const data = await apiRequest<{ answer: string; provider: string; model: string }>(
+    endpoints.ai.chat,
+    {
+      method: 'POST',
+      body: JSON.stringify({ query: message }),
+    },
+  );
 
-  return data.reply;
+  return data.answer;
 }

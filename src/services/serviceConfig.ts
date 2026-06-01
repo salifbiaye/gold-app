@@ -1,7 +1,6 @@
-/**
- * Central service configuration.
- * Flip `useMock` to false to connect a real backend — no screen changes needed.
- */
+import { env } from '../config/env';
+
+/** All feature services read this flag; screens never choose between mock and API. */
 export const serviceConfig = {
-  useMock: true,
+  useMock: env.useMockApi,
 } as const;

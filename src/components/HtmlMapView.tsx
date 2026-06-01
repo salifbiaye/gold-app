@@ -9,10 +9,14 @@ type HtmlMapViewProps = {
   onError?: () => void;
 };
 
+function cleanDomStyle(style: object) {
+  return Object.fromEntries(Object.entries(style).filter(([key]) => Number.isNaN(Number(key))));
+}
+
 export const HtmlMapView = forwardRef<WebView, HtmlMapViewProps>(
   ({ html, style, scrollEnabled = false, onError }, ref) => {
     if (Platform.OS === 'web') {
-      const flatStyle = StyleSheet.flatten(style) ?? {};
+      const flatStyle = cleanDomStyle(StyleSheet.flatten(style) ?? {});
       return createElement('iframe', {
         srcDoc: html,
         style: {

@@ -15,12 +15,16 @@ import { Check, ChevronDown, Eye, EyeOff, Search, X } from 'lucide-react-native'
 import { OperatorLogo } from '../components/OperatorLogo';
 import { DeviceContact, useDeviceContacts } from '../hooks/useDeviceContacts';
 import QRCode from 'react-native-qrcode-svg';
+import { HeaderBar } from '../components/HeaderBar';
 import { PressScale } from '../components/PressScale';
 import { Screen } from '../components/Screen';
 import { SectionHeader } from '../components/SectionHeader';
+import { securityConfig } from '../config/security';
 import { useScanner } from '../context/ScannerContext';
 import { useAppTheme } from '../context/ThemeContext';
-import { transactions, walletActions } from '../data/mockData';
+import { requestBiometricAuth } from '../services/security/biometricService';
+import { getWalletActions, getWalletTransactions } from '../services/wallet/walletService';
+import { useRepositoryQuery } from '../hooks/useRepositoryQuery';
 
 type ActionId = 'transfer' | 'pay' | 'withdraw' | 'topup' | 'details' | 'bills' | 'credit' | null;
 
@@ -72,6 +76,8 @@ export function WalletScreen() {
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [balanceHidden, setBalanceHidden] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const transactions = useRepositoryQuery(getWalletTransactions).data ?? [];
+  const walletActions = useRepositoryQuery(getWalletActions).data ?? [];
 
   const visibleTransactions = showAllHistory ? transactions : transactions.slice(0, 4);
   const cardTone = resolvedMode === 'dark'
@@ -84,20 +90,29 @@ export function WalletScreen() {
     : {
       gradient: ['#77C996', colors.primaryDark] as const,
       border: 'rgba(255,255,255,0.72)',
-      stage: '#EDF3F7',
+      stage: colors.primarySoft,
       shadowOpacity: 0.16,
     };
 
-  const handleOpenScanner = useCallback(() => {
+  const handleOpenScanner = useCallback(async () => {
+    const allowed = await requestBiometricAuth('Autoriser le scan QR');
+    if (!allowed) return;
+
     openScanner({
       onScanned: (data) => setScanResult(data),
       onClose: () => {},
     });
   }, [openScanner]);
 
-  const openAction = (id: string) => {
-    if (id === 'scan') { handleOpenScanner(); return; }
+  const openAction = async (id: string) => {
+    if (id === 'scan') { await handleOpenScanner(); return; }
     if (id === 'more') return;
+
+    if (securityConfig.biometric.protectedWalletActions.includes(id)) {
+      const allowed = await requestBiometricAuth('Confirmer cette action Wallet');
+      if (!allowed) return;
+    }
+
     setSubmitted(false);
     setSelectedAction(id as ActionId);
   };
@@ -105,11 +120,8 @@ export function WalletScreen() {
   const closeSheet = () => setSelectedAction(null);
 
   return (
-    <Screen edges={['left', 'right']}>
-      <View style={styles.titleRow}>
-        <View style={[styles.titleDot, { backgroundColor: colors.primary }]} />
-        <Text style={[styles.screenTitle, { color: colors.text }]}>Wallet</Text>
-      </View>
+    <Screen>
+      <HeaderBar title="Wallet" />
 
       <View style={[styles.cardStage, { backgroundColor: cardTone.stage }]}>
         <LinearGradient
@@ -155,11 +167,13 @@ export function WalletScreen() {
           return (
             <TouchableOpacity
               key={action.id}
-              style={[styles.action, { backgroundColor: colors.surface }]}
-              activeOpacity={0.84}
+              style={styles.actionWrap}
+              activeOpacity={0.82}
               onPress={() => openAction(action.id)}
             >
-              <Icon color={colors.primaryDark} size={22} />
+              <View style={[styles.actionTile, { backgroundColor: colors.primarySoft }]}>
+                <Icon color={colors.primary} size={24} strokeWidth={2.1} />
+              </View>
               <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.actionText, { color: colors.text }]}>
                 {action.label}
               </Text>
@@ -507,22 +521,6 @@ function WalletForm({
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  titleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 4,
-    marginTop: 2,
-  },
-  titleDot: {
-    borderRadius: 3,
-    height: 6,
-    width: 6,
-  },
-  screenTitle: {
-    fontSize: 18,
-    fontWeight: '900',
-  },
   cardStage: {
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
@@ -594,21 +592,26 @@ const styles = StyleSheet.create({
   actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 11,
     justifyContent: 'space-between',
+    rowGap: 20,
   },
-  action: {
+  actionWrap: {
     alignItems: 'center',
-    borderRadius: 8,
     gap: 8,
-    height: 76,
+    width: '23%',
+  },
+  actionTile: {
+    alignItems: 'center',
+    borderRadius: 18,
+    height: 62,
     justifyContent: 'center',
-    width: '22.5%',
+    width: 62,
   },
   actionText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '700',
-    maxWidth: '90%',
+    maxWidth: '95%',
+    textAlign: 'center',
   },
   list: {
     gap: 10,
@@ -840,3 +843,4 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 });
+

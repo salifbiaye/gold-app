@@ -8,33 +8,108 @@ import { ChevronLeft, MapPin, Navigation, Phone } from 'lucide-react-native';
 import { Screen } from '../components/Screen';
 import { HtmlMapView } from '../components/HtmlMapView';
 import { useAppTheme } from '../context/ThemeContext';
+import {
+  getMapPlaces,
+  getMapPlacesForCategories,
+  placeIconColor,
+  type Place,
+  type PlaceCategory,
+} from '../services/maps/placesService';
 import { colors as appColors } from '../theme/colors';
 
 const DEFAULT_LAT = 14.7167;
 const DEFAULT_LNG = -17.4677;
 
-type Marker = { lat: number; lng: number; color: string; emoji: string; label: string; category: string };
+type MobileMapCategory = 'all' | 'transport' | 'delivery' | 'pharmacy';
+type Marker = { lat: number; lng: number; color: string; emoji: string; label: string; category: PlaceCategory };
 
-function getMarkers(lat: number, lng: number): Marker[] {
-  return [
-    { lat: lat + 0.004, lng: lng + 0.006, color: '#0EB56D', emoji: '🚴', label: 'Livreur Moussa', category: 'livreurs' },
-    { lat: lat + 0.002, lng: lng - 0.010, color: '#0EB56D', emoji: '🚴', label: 'Livreur Awa', category: 'livreurs' },
-    { lat: lat - 0.005, lng: lng + 0.003, color: '#0EB56D', emoji: '🚴', label: 'Livreur Ibra', category: 'livreurs' },
-    { lat: lat - 0.003, lng: lng + 0.009, color: '#3388F2', emoji: '🚗', label: 'Taxi Yango', category: 'transport' },
-    { lat: lat + 0.006, lng: lng - 0.004, color: '#3388F2', emoji: '🚕', label: 'Taxi Confort', category: 'transport' },
-    { lat: lat - 0.007, lng: lng - 0.002, color: '#8C54D9', emoji: '🚌', label: 'Bus DDD', category: 'transport' },
-    { lat: lat + 0.003, lng: lng + 0.012, color: '#EF4444', emoji: '💊', label: 'Pharmacie Liberté', category: 'pharmacies' },
-    { lat: lat - 0.004, lng: lng - 0.008, color: '#EF4444', emoji: '🏥', label: 'Pharmacie Mermoz', category: 'pharmacies' },
-    { lat: lat + 0.008, lng: lng + 0.002, color: '#EF4444', emoji: '💊', label: 'Pharmacie Point E', category: 'pharmacies' },
-  ];
-}
-
-const CHIPS = [
+const CHIPS: Array<{ label: string; category: MobileMapCategory }> = [
   { label: 'Tout', category: 'all' },
   { label: 'Transport', category: 'transport' },
-  { label: 'Livreurs', category: 'livreurs' },
-  { label: 'Pharmacies', category: 'pharmacies' },
+  { label: 'Livreurs', category: 'delivery' },
+  { label: 'Pharmacies', category: 'pharmacy' },
 ];
+
+const CHIP_CATEGORIES: Record<MobileMapCategory, PlaceCategory[]> = {
+  all: ['delivery', 'transport', 'pharmacy'],
+  transport: ['transport'],
+  delivery: ['delivery'],
+  pharmacy: ['pharmacy'],
+};
+
+function markerEmoji(category: PlaceCategory) {
+  return {
+    restaurant: '🍽️',
+    cafe: '☕',
+    pharmacy: '💊',
+    fuel: '⛽',
+    atm: '💳',
+    hospital: '🏥',
+    transport: '🚗',
+    delivery: '🚴',
+  }[category];
+}
+
+function placeToMarker(place: Place): Marker {
+  return {
+    lat: place.position.lat,
+    lng: place.position.lng,
+    color: placeIconColor(place.category),
+    emoji: markerEmoji(place.category),
+    label: place.name,
+    category: place.category,
+  };
+}
+
+function escapePopupText(value: string) {
+  return value.replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }[char] ?? char));
+}
+
+function getBottomCard(category: MobileMapCategory, place?: Place, loading?: boolean) {
+  if (loading) {
+    return {
+      status: 'Recherche en cours',
+      name: 'Services proches',
+      rating: 'Synchronisation carte...',
+      img: category === 'pharmacy' ? 0 : 14,
+    };
+  }
+
+  if (place) {
+    const statusByCategory: Record<PlaceCategory, string> = {
+      restaurant: 'Restaurant disponible',
+      cafe: 'Cafe proche',
+      pharmacy: 'Pharmacie ouverte',
+      fuel: 'Station disponible',
+      atm: 'Service disponible',
+      hospital: 'Sante disponible',
+      transport: 'Chauffeur disponible',
+      delivery: 'Livreur disponible',
+    };
+
+    return {
+      status: statusByCategory[place.category],
+      name: place.name,
+      rating: place.address ?? (place.source === 'backend' ? 'Source OSM' : 'Disponible'),
+      img: place.category === 'pharmacy' || place.category === 'hospital' ? 0 : 14,
+    };
+  }
+
+  const fallback = {
+    transport: { status: 'Transport proche', name: 'Aucun chauffeur affiche', rating: 'Essaie de rafraichir', img: 14 },
+    delivery: { status: 'Livreur proche', name: 'Aucun livreur affiche', rating: 'Essaie de rafraichir', img: 14 },
+    pharmacy: { status: 'Pharmacie proche', name: 'Aucune pharmacie affichee', rating: 'Essaie de rafraichir', img: 0 },
+    all: { status: 'Services proches', name: 'Aucun service affiche', rating: 'Essaie de rafraichir', img: 14 },
+  };
+
+  return fallback[category];
+}
 
 function buildMapHTML(lat: number, lng: number, isDark: boolean, markers: Marker[]) {
   const tileUrl = isDark
@@ -51,7 +126,7 @@ function buildMapHTML(lat: number, lng: number, isDark: boolean, markers: Marker
         iconSize: [36, 36],
         iconAnchor: [18, 18],
       })
-    }).addTo(map).bindPopup('<b>${m.label}</b>');`,
+    }).addTo(map).bindPopup('<b>${escapePopupText(m.label)}</b>');`,
     )
     .join('\n');
 
@@ -100,6 +175,8 @@ export function MapScreen() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [address, setAddress] = useState('Localisation en cours...');
   const [locationLoading, setLocationLoading] = useState(true);
+  const [places, setPlaces] = useState<Place[]>([]);
+  const [placesLoading, setPlacesLoading] = useState(false);
   const [activeChip, setActiveChip] = useState(0);
   const webViewRef = useRef<WebView>(null);
 
@@ -133,19 +210,42 @@ export function MapScreen() {
 
   const mapLat = coords?.lat ?? DEFAULT_LAT;
   const mapLng = coords?.lng ?? DEFAULT_LNG;
-  const allMarkers = getMarkers(mapLat, mapLng);
   const activeCat = CHIPS[activeChip].category;
-  const filtered = activeCat === 'all' ? allMarkers : allMarkers.filter((m) => m.category === activeCat);
-  const mapHTML = buildMapHTML(mapLat, mapLng, isDark, filtered);
+  const filtered = places;
+  const mapMarkers = useMemo(() => filtered.map(placeToMarker), [filtered]);
+  const mapHTML = useMemo(() => buildMapHTML(mapLat, mapLng, isDark, mapMarkers), [isDark, mapLat, mapLng, mapMarkers]);
 
-  // Bottom card adapts to active filter
-  const cardConfig = {
-    transport: { status: 'Chauffeur disponible', name: 'Mamadou Fall', rating: '4.9 · 3 min', img: 14 },
-    livreurs: { status: 'Livreur disponible', name: 'Ousmane Diop', rating: '4.8 · 2 min', img: 14 },
-    pharmacies: { status: 'Pharmacie ouverte', name: 'Pharmacie Liberté', rating: '0.8 km · Ouvert', img: 0 },
-    all: { status: 'Livreur disponible', name: 'Ousmane Diop', rating: '4.8 · 2 min', img: 14 },
-  };
-  const card = cardConfig[activeCat as keyof typeof cardConfig];
+  useEffect(() => {
+    if (!coords) return;
+
+    let cancelled = false;
+    const center = { lat: coords.lat, lng: coords.lng };
+    const categories = CHIP_CATEGORIES[activeCat];
+
+    setPlacesLoading(true);
+    const request =
+      activeCat === 'all'
+        ? getMapPlacesForCategories(center, categories, 2500)
+        : getMapPlaces(center, categories[0], 2500);
+
+    request
+      .then((results) => {
+        if (!cancelled) setPlaces(results);
+      })
+      .catch(() => {
+        if (!cancelled) setPlaces([]);
+      })
+      .finally(() => {
+        if (!cancelled) setPlacesLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCat, coords]);
+
+  const primaryPlace = filtered[0];
+  const card = getBottomCard(activeCat, primaryPlace, placesLoading);
 
   return (
     <Screen scroll={false} padded={false} edges={['left', 'right']}>
@@ -340,3 +440,4 @@ function createStyles(colors: typeof appColors) {
     },
   });
 }
+

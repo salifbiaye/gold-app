@@ -98,18 +98,18 @@ export function SettingsScreen() {
                 activeOpacity={0.7}
                 onPress={() => setMode(opt.value)}
               >
-                <Icon color={selected ? colors.primary : colors.muted} size={17} />
+                <Icon color={selected ? colors.primary : colors.muted} size={21} strokeWidth={2.25} />
                 <Text style={[styles.optionLabel, selected && { color: colors.primary, fontWeight: '700' }]}>
                   {opt.label}
                 </Text>
-                {selected && <Check color={colors.primary} size={16} />}
+                {selected && <Check color={colors.primary} size={20} strokeWidth={2.35} />}
               </TouchableOpacity>
             );
           })}
           <View style={styles.modeHint}>
             {resolvedMode === 'dark'
-              ? <Moon color={colors.primary} size={11} />
-              : <Sun color={colors.warning} size={11} />}
+              ? <Moon color={colors.primary} size={15} />
+              : <Sun color={colors.warning} size={15} />}
             <Text style={styles.modeHintText}>
               Actif : {resolvedMode === 'dark' ? 'Sombre' : 'Clair'}
             </Text>
@@ -133,7 +133,7 @@ export function SettingsScreen() {
                 <Text style={[styles.optionLabel, selected && { color: colors.primary, fontWeight: '700' }]}>
                   {c}
                 </Text>
-                {selected && <Check color={colors.primary} size={16} />}
+                {selected && <Check color={colors.primary} size={20} strokeWidth={2.35} />}
               </TouchableOpacity>
             );
           })}
@@ -151,7 +151,7 @@ export function SettingsScreen() {
     <Screen>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <ArrowLeft color={colors.text} size={22} />
+          <ArrowLeft color={colors.text} size={25} strokeWidth={2.4} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Paramètres</Text>
         <View style={{ width: 36 }} />
@@ -176,7 +176,7 @@ export function SettingsScreen() {
                     activeOpacity={0.7}
                     onPress={isExp ? () => toggle(row.id) : undefined}
                   >
-                    <Icon color={colors.muted} size={19} strokeWidth={1.8} />
+                    <Icon color={colors.muted} size={23} strokeWidth={2.1} />
                     <Text style={styles.rowLabel}>{row.label}</Text>
                     {isTgl && row.id === 'notif' && (
                       <View style={styles.switchWrap}>
@@ -200,8 +200,8 @@ export function SettingsScreen() {
                         />
                       </View>
                     )}
-                    {isExp && <Chevron color={colors.muted} size={16} />}
-                    {!isExp && !isTgl && <ChevronRight color={colors.muted} size={16} />}
+                    {isExp && <Chevron color={colors.muted} size={20} strokeWidth={2.25} />}
+                    {!isExp && !isTgl && <ChevronRight color={colors.muted} size={20} strokeWidth={2.25} />}
                   </TouchableOpacity>
                   {renderExpandable(row.id)}
                   {isOpen && !isLast && <View style={styles.rowBorderFull} />}
@@ -215,7 +215,7 @@ export function SettingsScreen() {
       <Text style={styles.sectionLabel}>Déconnexion</Text>
       <View style={styles.card}>
         <TouchableOpacity style={styles.logoutRow} activeOpacity={0.8} onPress={logout}>
-          <LogOut color={colors.muted} size={18} />
+          <LogOut color={colors.muted} size={22} strokeWidth={2.1} />
           <Text style={styles.logoutText}>Se déconnecter</Text>
         </TouchableOpacity>
       </View>
@@ -231,26 +231,26 @@ function createStyles(colors: typeof appColors) {
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'space-between',
-      paddingBottom: 8,
-      paddingTop: 4,
+      paddingBottom: 12,
+      paddingTop: 6,
     },
     backBtn: {
       alignItems: 'center',
       backgroundColor: colors.surface,
-      borderRadius: 18,
-      height: 36,
+      borderRadius: 21,
+      height: 42,
       justifyContent: 'center',
-      width: 36,
+      width: 42,
     },
     headerTitle: {
       color: colors.text,
-      fontSize: 17,
+      fontSize: 22,
       fontWeight: '900',
     },
     sectionLabel: {
       color: colors.muted,
-      fontSize: 11,
-      fontWeight: '700',
+      fontSize: 12,
+      fontWeight: '800',
       letterSpacing: 0.3,
       marginBottom: 6,
       marginTop: 18,
@@ -258,15 +258,15 @@ function createStyles(colors: typeof appColors) {
     },
     card: {
       backgroundColor: colors.surface,
-      borderRadius: 12,
+      borderRadius: 14,
       overflow: 'hidden',
     },
     row: {
       alignItems: 'center',
       flexDirection: 'row',
       gap: 14,
-      minHeight: 50,
-      paddingHorizontal: 16,
+      minHeight: 58,
+      paddingHorizontal: 18,
     },
     rowBorder: {
       borderBottomColor: colors.border,
@@ -280,8 +280,8 @@ function createStyles(colors: typeof appColors) {
     rowLabel: {
       color: colors.text,
       flex: 1,
-      fontSize: 14,
-      fontWeight: '600',
+      fontSize: 16,
+      fontWeight: '700',
     },
     switchWrap: {
       alignItems: 'center',
@@ -299,7 +299,7 @@ function createStyles(colors: typeof appColors) {
       flexDirection: 'row',
       gap: 12,
       paddingHorizontal: 12,
-      paddingVertical: 11,
+      paddingVertical: 13,
     },
     optionRowActive: {
       backgroundColor: colors.primarySoft,
@@ -307,8 +307,8 @@ function createStyles(colors: typeof appColors) {
     optionLabel: {
       color: colors.text,
       flex: 1,
-      fontSize: 13,
-      fontWeight: '500',
+      fontSize: 15,
+      fontWeight: '600',
     },
     modeHint: {
       alignItems: 'center',
@@ -319,28 +319,29 @@ function createStyles(colors: typeof appColors) {
     },
     modeHintText: {
       color: colors.muted,
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: '600',
     },
     logoutRow: {
       alignItems: 'center',
       flexDirection: 'row',
       gap: 14,
-      minHeight: 50,
-      paddingHorizontal: 16,
+      minHeight: 58,
+      paddingHorizontal: 18,
     },
     logoutText: {
       color: colors.muted,
       flex: 1,
-      fontSize: 14,
-      fontWeight: '600',
+      fontSize: 16,
+      fontWeight: '700',
     },
     version: {
       color: colors.muted,
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: '600',
       marginTop: 16,
       textAlign: 'center',
     },
   });
 }
+

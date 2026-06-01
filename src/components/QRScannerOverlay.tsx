@@ -200,6 +200,7 @@ const CORNER_W = 4;
 const styles = StyleSheet.create({
   root: {
     ...StyleSheet.absoluteFillObject,
+    position: Platform.OS === 'web' ? ('fixed' as never) : 'absolute',
     backgroundColor: '#000000',
     zIndex: 9999,
   },

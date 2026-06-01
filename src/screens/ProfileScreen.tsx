@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import {
   Animated,
+  ActivityIndicator,
   Image,
   Linking,
   Modal,
@@ -12,7 +13,7 @@ import {
   View,
 } from 'react-native';
 import {
-  ArrowLeft,
+  Camera,
   ChevronDown,
   ChevronRight,
   CreditCard,
@@ -29,9 +30,13 @@ import {
 } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker';
+import { HeaderBar } from '../components/HeaderBar';
 import { Screen } from '../components/Screen';
 import { useAuth } from '../context/AuthContext';
 import { useAppTheme } from '../context/ThemeContext';
+import { uploadAvatar } from '../services/profile/profileService';
+import { serviceConfig } from '../services/serviceConfig';
 import { colors as appColors } from '../theme/colors';
 import { IconComponent } from '../types/icon';
 
@@ -84,9 +89,10 @@ const SUPPORT_ROW_ACTIONS: Record<string, string> = {
 export function ProfileScreen() {
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const sheetY = useRef(new Animated.Value(300)).current;
   const sheetBackdrop = useRef(new Animated.Value(0)).current;
-  const { logout } = useAuth();
+  const { auth, logout, updateUser } = useAuth();
   const navigation = useNavigation<any>();
   const { colors } = useAppTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
@@ -121,23 +127,40 @@ export function ProfileScreen() {
     }
   };
 
-  const goBack = () => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    } else {
-      navigation.navigate('MainTabs');
+  const pickAvatar = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) return;
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.85,
+    });
+    if (result.canceled || !result.assets[0]) return;
+
+    const asset = result.assets[0];
+    if (serviceConfig.useMock) {
+      updateUser({ ...auth.user, avatarUrl: asset.uri });
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const user = await uploadAvatar({
+        uri: asset.uri,
+        name: asset.fileName ?? 'avatar.jpg',
+        type: asset.mimeType ?? 'image/jpeg',
+      });
+      updateUser({ ...user, token: auth.token });
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
   return (
     <Screen>
-      <View style={styles.topHeader}>
-        <TouchableOpacity style={styles.backButton} activeOpacity={0.78} onPress={goBack}>
-          <ArrowLeft color={colors.text} size={22} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Profil</Text>
-        <View style={styles.headerGhost} />
-      </View>
+      <HeaderBar title="Profil" />
 
       <View style={styles.profileCard}>
         <LinearGradient colors={[colors.primary, colors.primaryDark]} style={styles.profileCover}>
@@ -146,12 +169,24 @@ export function ProfileScreen() {
         </LinearGradient>
 
         <View style={styles.profileBody}>
-          <Image source={require('../../assets/images/avatar-salif.jpg')} style={styles.avatar} />
+          <TouchableOpacity activeOpacity={0.82} onPress={pickAvatar} style={styles.avatarAction}>
+            <Image
+              source={auth.user.avatarUrl ? { uri: auth.user.avatarUrl } : require('../../assets/images/avatar-salif.jpg')}
+              style={styles.avatar}
+            />
+            <View style={styles.avatarEdit}>
+              {uploadingAvatar ? (
+                <ActivityIndicator color="#FFFFFF" size="small" />
+              ) : (
+                <Camera color="#FFFFFF" size={17} strokeWidth={2.5} />
+              )}
+            </View>
+          </TouchableOpacity>
           <View style={styles.profileText}>
             <Text style={styles.name}>Salif Biaye</Text>
             <Text style={styles.handle}>@salif.biaye</Text>
             <View style={styles.verifiedRow}>
-              <ShieldCheck color={colors.primary} size={14} />
+              <ShieldCheck color={colors.primary} size={17} strokeWidth={2.35} />
               <Text style={styles.verified}>Profil verifie</Text>
             </View>
           </View>
@@ -162,7 +197,7 @@ export function ProfileScreen() {
               activeOpacity={0.78}
               onPress={() => setOpenSection('personal')}
             >
-              <UserRound color={colors.text} size={16} />
+              <UserRound color={colors.text} size={19} strokeWidth={2.3} />
               <Text style={styles.profilePillText}>Infos</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -170,7 +205,7 @@ export function ProfileScreen() {
               activeOpacity={0.78}
               onPress={() => navigation.navigate('Settings')}
             >
-              <Settings color={colors.text} size={16} />
+              <Settings color={colors.text} size={19} strokeWidth={2.3} />
               <Text style={styles.profilePillText}>Parametres</Text>
             </TouchableOpacity>
           </View>
@@ -183,7 +218,7 @@ export function ProfileScreen() {
           <Text style={styles.identitySub}>+221 77 123 45 67 - Wallet actif</Text>
         </View>
         <View style={styles.identityBadge}>
-          <ShieldCheck color={colors.primary} size={16} />
+          <ShieldCheck color={colors.primary} size={20} strokeWidth={2.35} />
         </View>
       </View>
 
@@ -198,10 +233,10 @@ export function ProfileScreen() {
             <View key={section.id} style={[styles.section, isLast && { borderBottomWidth: 0 }]}>
               <TouchableOpacity style={styles.menuItem} activeOpacity={0.78} onPress={() => toggleSection(section.id)}>
                 <View style={styles.itemLeft}>
-                  <Icon color={colors.text} size={17} strokeWidth={2} />
+                  <Icon color={colors.text} size={21} strokeWidth={2.25} />
                   <Text style={styles.menuLabel}>{section.title}</Text>
                 </View>
-                <Chevron color={colors.muted} size={18} />
+                <Chevron color={colors.muted} size={22} strokeWidth={2.25} />
               </TouchableOpacity>
 
               {isOpen ? (
@@ -218,7 +253,7 @@ export function ProfileScreen() {
                       onPress={section.id === 'support' ? () => handleSupportRow(row) : undefined}
                     >
                       <Text style={[styles.drawerText, { flex: 1 }]}>{row}</Text>
-                      {section.id === 'support' && <ChevronRight color={colors.muted} size={14} />}
+                      {section.id === 'support' && <ChevronRight color={colors.muted} size={18} strokeWidth={2.25} />}
                     </TouchableOpacity>
                   ))}
 
@@ -233,7 +268,7 @@ export function ProfileScreen() {
       {/* Deconnexion */}
       <View style={styles.logoutCard}>
         <TouchableOpacity style={styles.logoutRow} activeOpacity={0.78} onPress={logout}>
-          <LogOut color={colors.muted} size={17} />
+          <LogOut color={colors.muted} size={21} strokeWidth={2.25} />
           <Text style={styles.logoutText}>Se deconnecter</Text>
         </TouchableOpacity>
       </View>
@@ -250,7 +285,7 @@ export function ProfileScreen() {
           <View style={styles.sheetHeader}>
             <Text style={[styles.sheetTitle, { color: colors.text }]}>Contacter le support</Text>
             <TouchableOpacity onPress={closeSupportSheet}>
-              <X color={colors.muted} size={20} />
+              <X color={colors.muted} size={23} />
             </TouchableOpacity>
           </View>
 
@@ -260,7 +295,7 @@ export function ProfileScreen() {
             onPress={() => { closeSupportSheet(); Linking.openURL('https://wa.me/221770000000'); }}
           >
             <View style={[styles.sheetIcon, { backgroundColor: '#25D36614' }]}>
-              <MessageCircle color="#25D366" size={20} />
+              <MessageCircle color="#25D366" size={23} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.sheetRowTitle, { color: colors.text }]}>WhatsApp</Text>
@@ -274,7 +309,7 @@ export function ProfileScreen() {
             onPress={() => { closeSupportSheet(); Linking.openURL('tel:+221800001234'); }}
           >
             <View style={[styles.sheetIcon, { backgroundColor: `${colors.primary}14` }]}>
-              <Phone color={colors.primary} size={20} />
+              <Phone color={colors.primary} size={23} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.sheetRowTitle, { color: colors.text }]}>Appel gratuit</Text>
@@ -289,29 +324,6 @@ export function ProfileScreen() {
 
 function createStyles(colors: typeof appColors) {
   return StyleSheet.create({
-    topHeader: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingBottom: 12,
-      paddingTop: 4,
-    },
-    backButton: {
-      alignItems: 'center',
-      borderRadius: 18,
-      height: 36,
-      justifyContent: 'center',
-      width: 36,
-    },
-    headerTitle: {
-      color: colors.text,
-      fontSize: 16,
-      fontWeight: '900',
-    },
-    headerGhost: {
-      height: 36,
-      width: 36,
-    },
     profileCard: {
       backgroundColor: colors.surface,
       borderColor: colors.border,
@@ -326,7 +338,7 @@ function createStyles(colors: typeof appColors) {
       elevation: 3,
     },
     profileCover: {
-      height: 92,
+      height: 104,
       overflow: 'hidden',
       position: 'relative',
     },
@@ -356,29 +368,46 @@ function createStyles(colors: typeof appColors) {
     },
     avatar: {
       borderColor: '#FFFFFF',
-      borderRadius: 34,
+      borderRadius: 40,
       borderWidth: 3,
-      height: 68,
-      marginTop: -34,
-      width: 68,
+      height: 80,
+      width: 80,
+    },
+    avatarAction: {
+      alignSelf: 'flex-start',
+      marginTop: -40,
+      position: 'relative',
+    },
+    avatarEdit: {
+      alignItems: 'center',
+      backgroundColor: colors.primary,
+      borderColor: '#FFFFFF',
+      borderRadius: 15,
+      borderWidth: 2,
+      bottom: 1,
+      height: 30,
+      justifyContent: 'center',
+      position: 'absolute',
+      right: -2,
+      width: 30,
     },
     profileText: {
       marginTop: 8,
     },
     name: {
       color: colors.text,
-      fontSize: 17,
+      fontSize: 21,
       fontWeight: '900',
     },
     handle: {
       color: colors.primary,
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '800',
       marginTop: 3,
     },
     verified: {
       color: colors.muted,
-      fontSize: 12,
+      fontSize: 13,
       fontWeight: '800',
     },
     verifiedRow: {
@@ -401,12 +430,12 @@ function createStyles(colors: typeof appColors) {
       flexDirection: 'row',
       gap: 8,
       justifyContent: 'center',
-      minHeight: 38,
+      minHeight: 46,
       paddingHorizontal: 12,
     },
     profilePillText: {
       color: colors.text,
-      fontSize: 13,
+      fontSize: 15,
       fontWeight: '900',
     },
     identityCard: {
@@ -425,23 +454,23 @@ function createStyles(colors: typeof appColors) {
     },
     identityTitle: {
       color: colors.text,
-      fontSize: 14,
+      fontSize: 16,
       fontWeight: '900',
     },
     identitySub: {
       color: colors.muted,
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '700',
-      lineHeight: 17,
+      lineHeight: 20,
       marginTop: 4,
     },
     identityBadge: {
       alignItems: 'center',
       backgroundColor: colors.primarySoft,
-      borderRadius: 16,
-      height: 32,
+      borderRadius: 20,
+      height: 40,
       justifyContent: 'center',
-      width: 32,
+      width: 40,
     },
     menu: {
       backgroundColor: colors.surface,
@@ -457,8 +486,8 @@ function createStyles(colors: typeof appColors) {
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'space-between',
-      minHeight: 48,
-      paddingHorizontal: 16,
+      minHeight: 58,
+      paddingHorizontal: 18,
     },
     itemLeft: {
       alignItems: 'center',
@@ -469,7 +498,7 @@ function createStyles(colors: typeof appColors) {
     menuLabel: {
       color: colors.text,
       flex: 1,
-      fontSize: 13,
+      fontSize: 15,
       fontWeight: '800',
     },
     // Drawer Apple-style : fond = surface (blanc en light, surface sombre en dark), pas de gris fort
@@ -495,12 +524,12 @@ function createStyles(colors: typeof appColors) {
     },
     drawerText: {
       color: colors.text,
-      fontSize: 13,
-      fontWeight: '500',
+      fontSize: 15,
+      fontWeight: '600',
     },
     drawerTextMuted: {
       color: colors.muted,
-      fontSize: 12,
+      fontSize: 13,
       marginTop: 2,
     },
     settingsNav: {
@@ -510,8 +539,8 @@ function createStyles(colors: typeof appColors) {
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginTop: 12,
-      minHeight: 48,
-      paddingHorizontal: 16,
+      minHeight: 58,
+      paddingHorizontal: 18,
     },
     logoutCard: {
       backgroundColor: colors.surface,
@@ -523,12 +552,12 @@ function createStyles(colors: typeof appColors) {
       alignItems: 'center',
       flexDirection: 'row',
       gap: 10,
-      minHeight: 48,
-      paddingHorizontal: 16,
+      minHeight: 58,
+      paddingHorizontal: 18,
     },
     logoutText: {
       color: colors.muted,
-      fontSize: 13,
+      fontSize: 15,
       fontWeight: '700',
     },
     sheetBackdrop: {
@@ -554,7 +583,7 @@ function createStyles(colors: typeof appColors) {
       marginBottom: 18,
     },
     sheetTitle: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: '900',
     },
     sheetRow: {
@@ -567,18 +596,19 @@ function createStyles(colors: typeof appColors) {
     sheetIcon: {
       alignItems: 'center',
       borderRadius: 12,
-      height: 42,
+      height: 48,
       justifyContent: 'center',
-      width: 42,
+      width: 48,
     },
     sheetRowTitle: {
-      fontSize: 14,
-      fontWeight: '700',
+      fontSize: 16,
+      fontWeight: '800',
     },
     sheetRowSub: {
-      fontSize: 12,
+      fontSize: 13,
       fontWeight: '500',
       marginTop: 2,
     },
   });
 }
+

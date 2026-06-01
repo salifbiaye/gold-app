@@ -9,8 +9,9 @@ import { ServiceIntroCard } from '../components/ServiceIntroCard';
 import { securityConfig } from '../config/security';
 
 import { useAppTheme } from '../context/ThemeContext';
-import { paymentMenu } from '../data/mockData';
 import { requestBiometricAuth } from '../services/security/biometricService';
+import { getPaymentMenu } from '../services/payments/paymentsService';
+import { useRepositoryQuery } from '../hooks/useRepositoryQuery';
 import { colors as appColors } from '../theme/colors';
 
 type DrawerFields = Record<string, string[]>;
@@ -31,6 +32,7 @@ export function PaymentsScreen() {
   const [openItem, setOpenItem] = useState<string | null>(null);
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState<string | null>(null);
+  const paymentMenu = useRepositoryQuery(getPaymentMenu).data ?? [];
 
   const toggle = (id: string) => {
     setOpenItem((prev) => (prev === id ? null : id));
@@ -221,3 +223,4 @@ function createStyles(colors: typeof appColors) {
     },
   });
 }
+

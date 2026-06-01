@@ -1,231 +1,190 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { ChevronRight, Info } from 'lucide-react-native';
+import { Bike, Building2, Bus, Package, Utensils } from 'lucide-react-native';
+import { HeaderBar } from '../components/HeaderBar';
 import { Screen } from '../components/Screen';
 import { useAppTheme } from '../context/ThemeContext';
-import { orders } from '../data/mockData';
+import { getOrders, type Order } from '../services/orders/ordersService';
+import { useRepositoryQuery } from '../hooks/useRepositoryQuery';
 import { colors as appColors } from '../theme/colors';
 
-const tabs = [
-  { key: 'all', label: 'Toutes' },
-  { key: 'active', label: 'En cours' },
+const TABS = [
+  { key: 'all',       label: 'Toutes' },
+  { key: 'active',    label: 'En cours' },
   { key: 'completed', label: 'Terminées' },
   { key: 'cancelled', label: 'Annulées' },
 ] as const;
 
-type TabKey = (typeof tabs)[number]['key'];
+type TabKey = (typeof TABS)[number]['key'];
+
+function iconFor(order: Order) {
+  const t = order.title.toLowerCase();
+  if (t.includes('restaurant') || t.includes('food') || t.includes('repas')) return Utensils;
+  if (t.includes('livraison') || t.includes('course')) return Bike;
+  if (t.includes('appart') || t.includes('immo')) return Building2;
+  if (t.includes('transport') || t.includes('yango') || t.includes('taxi')) return Bus;
+  return Package;
+}
 
 export function OrdersScreen() {
   const { colors } = useAppTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
-  const [activeTab, setActiveTab] = useState<TabKey>('all');
-  const visibleOrders = orders.filter((order) => activeTab === 'all' || order.statusKey === activeTab);
+  const s = useMemo(() => createStyles(colors), [colors]);
+  const [tab, setTab] = useState<TabKey>('all');
+  const orders = useRepositoryQuery(getOrders).data ?? [];
+
+  const visible = tab === 'all' ? orders : orders.filter((o) => o.statusKey === tab);
 
   return (
-    <Screen edges={['left', 'right']}>
-      <View style={styles.titleRow}>
-        <View style={styles.titleDot} />
-        <Text style={styles.screenTitle}>Mes commandes</Text>
-      </View>
+    <Screen>
+      <HeaderBar title="Mes commandes" />
 
-      <View style={styles.tabs}>
-        {tabs.map((tab) => {
-          const isActive = activeTab === tab.key;
-
+      {/* Tabs — plain View, no nested ScrollView */}
+      <View style={s.tabRow}>
+        {TABS.map((t) => {
+          const active = tab === t.key;
           return (
             <TouchableOpacity
-              key={tab.key}
-              style={[styles.tab, isActive && styles.activeTab]}
-              activeOpacity={0.82}
-              onPress={() => setActiveTab(tab.key)}
+              key={t.key}
+              onPress={() => setTab(t.key)}
+              activeOpacity={0.78}
+              style={[
+                s.tab,
+                active
+                  ? { backgroundColor: colors.primary, borderColor: colors.primary }
+                  : { backgroundColor: colors.surface, borderColor: colors.border },
+              ]}
             >
-              <Text style={[styles.tabText, isActive && styles.activeTabText]}>{tab.label}</Text>
+              <Text style={[s.tabText, { color: active ? '#FFFFFF' : colors.text }]}>
+                {t.label}
+              </Text>
             </TouchableOpacity>
           );
         })}
       </View>
 
-      <View style={styles.ordersList}>
-        {visibleOrders.map((order, index) => {
-          const isLast = index === visibleOrders.length - 1;
-
-          return (
-            <TouchableOpacity
-              key={order.id}
-              style={[styles.orderRow, isLast && styles.orderRowLast]}
-              activeOpacity={0.76}
-            >
-              <View style={[styles.statusIcon, { backgroundColor: `${order.statusColor}18` }]}>
-                <View style={[styles.statusDot, { backgroundColor: order.statusColor }]} />
-              </View>
-
-              <View style={styles.orderCopy}>
-                <View style={styles.orderHeader}>
-                  <Text style={styles.orderId}>{order.id}</Text>
-                  <Text style={[styles.status, { color: order.statusColor, backgroundColor: `${order.statusColor}18` }]}>
-                    {order.status}
-                  </Text>
-                </View>
-                <Text style={styles.title}>{order.title}</Text>
-                <Text style={styles.meta}>{order.meta}</Text>
-                <Text style={styles.meta}>{order.detail}</Text>
-              </View>
-
-              <ChevronRight color={colors.muted} size={18} />
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-
-      {visibleOrders.length === 0 ? (
-        <View style={styles.emptyBox}>
-          <Text style={styles.emptyText}>Aucune commande dans cette catégorie.</Text>
-        </View>
-      ) : null}
-
-      <View style={styles.infoBox}>
-        <Info color={colors.blue} size={18} />
-        <Text style={styles.infoText}>Le suivi en temps réel se branchera ici sur votre backend commandes.</Text>
+      {/* Cards */}
+      <View style={s.list}>
+        {visible.length === 0 ? (
+          <View style={[s.empty, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[s.emptyText, { color: colors.muted }]}>Aucune commande ici.</Text>
+          </View>
+        ) : (
+          visible.map((order) => <OrderCard key={order.id} order={order} colors={colors} s={s} />)
+        )}
       </View>
     </Screen>
   );
 }
 
+function OrderCard({ order, colors, s }: { order: Order; colors: typeof appColors; s: ReturnType<typeof createStyles> }) {
+  const Icon = iconFor(order);
+  const isActive = order.statusKey === 'active';
+
+  return (
+    <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      {/* Row 1: ID + status */}
+      <View style={s.cardTop}>
+        <Text style={[s.orderId, { color: colors.muted }]}>{order.id}</Text>
+        <View style={[s.statusPill, { backgroundColor: order.statusColor + '18' }]}>
+          <Text style={[s.statusText, { color: order.statusColor }]}>{order.status}</Text>
+        </View>
+      </View>
+
+      {/* Row 2: icon + info */}
+      <View style={s.cardBody}>
+        <View style={[s.iconCircle, { backgroundColor: order.statusColor + '15' }]}>
+          <Icon color={order.statusColor} size={18} strokeWidth={2.2} />
+        </View>
+        <View style={s.info}>
+          <Text style={[s.orderTitle, { color: colors.text }]} numberOfLines={1}>{order.title}</Text>
+          <Text style={[s.orderMeta, { color: colors.muted }]}>{order.meta}</Text>
+          <Text style={[s.orderMeta, { color: colors.muted }]}>{order.detail}</Text>
+        </View>
+      </View>
+
+      {/* Row 3: action */}
+      <View style={s.cardFoot}>
+        <TouchableOpacity
+          activeOpacity={0.82}
+          style={[
+            s.actionBtn,
+            isActive
+              ? { backgroundColor: colors.primary, borderColor: colors.primary }
+              : { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
+          <Text style={[s.actionText, { color: isActive ? '#FFFFFF' : colors.text }]}>
+            {isActive ? 'Suivre' : 'Détails'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
 function createStyles(colors: typeof appColors) {
   return StyleSheet.create({
-    titleRow: {
-      alignItems: 'center',
+
+    tabRow: {
       flexDirection: 'row',
-      gap: 8,
-      marginBottom: 4,
-      marginTop: 2,
-    },
-    titleDot: {
-      backgroundColor: colors.primary,
-      borderRadius: 3,
-      height: 6,
-      width: 6,
-    },
-    screenTitle: {
-      color: colors.text,
-      fontSize: 18,
-      fontWeight: '900',
-    },
-    tabs: {
-      flexDirection: 'row',
-      gap: 8,
-      marginTop: 16,
+      gap: 6,
+      marginBottom: 14,
     },
     tab: {
-      borderRadius: 16,
-      paddingHorizontal: 13,
+      alignItems: 'center',
+      borderRadius: 20,
+      borderWidth: 1,
+      flex: 1,
       paddingVertical: 8,
     },
-    activeTab: {
-      backgroundColor: colors.primarySoft,
-    },
-    tabText: {
-      color: colors.muted,
-      fontSize: 12,
-      fontWeight: '700',
-    },
-    activeTabText: {
-      color: colors.primaryDark,
-    },
-    ordersList: {
-      backgroundColor: colors.surface,
-      borderColor: colors.border,
-      borderRadius: 16,
-      borderWidth: 1,
-      marginTop: 18,
-      overflow: 'hidden',
-    },
-    orderRow: {
-      alignItems: 'center',
-      borderBottomColor: colors.border,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      flexDirection: 'row',
-      gap: 12,
-      minHeight: 92,
+    tabText: { fontSize: 12, fontWeight: '800', textAlign: 'center' },
+
+    list: { gap: 10 },
+
+    card: {
+      borderRadius: 14,
+      borderWidth: StyleSheet.hairlineWidth,
+      elevation: 2,
       paddingHorizontal: 14,
-      paddingVertical: 13,
+      paddingVertical: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.06,
+      shadowRadius: 4,
     },
-    orderRowLast: {
-      borderBottomWidth: 0,
-    },
-    statusIcon: {
-      alignItems: 'center',
-      borderRadius: 18,
-      height: 38,
-      justifyContent: 'center',
-      width: 38,
-    },
-    statusDot: {
-      borderRadius: 6,
-      height: 12,
-      width: 12,
-    },
-    orderCopy: {
-      flex: 1,
-    },
-    orderHeader: {
+
+    cardTop: {
       alignItems: 'center',
       flexDirection: 'row',
-      gap: 8,
       justifyContent: 'space-between',
+      marginBottom: 8,
     },
-    orderId: {
-      color: colors.text,
-      flexShrink: 1,
-      fontSize: 11,
-      fontWeight: '800',
-    },
-    status: {
-      borderRadius: 8,
-      fontSize: 10,
-      fontWeight: '800',
-      overflow: 'hidden',
-      paddingHorizontal: 7,
-      paddingVertical: 4,
-    },
-    title: {
-      color: colors.text,
-      fontSize: 14,
-      fontWeight: '900',
-      marginTop: 6,
-    },
-    meta: {
-      color: colors.muted,
-      fontSize: 11,
-      fontWeight: '600',
-      marginTop: 3,
-    },
-    infoBox: {
+    orderId: { fontSize: 11, fontWeight: '700' },
+    statusPill: { borderRadius: 7, paddingHorizontal: 8, paddingVertical: 3 },
+    statusText: { fontSize: 11, fontWeight: '800' },
+
+    cardBody: { alignItems: 'center', flexDirection: 'row', gap: 10 },
+    iconCircle: {
       alignItems: 'center',
-      backgroundColor: `${colors.blue}18`,
-      borderRadius: 10,
-      flexDirection: 'row',
-      gap: 10,
-      marginTop: 16,
-      padding: 12,
+      borderRadius: 999,
+      height: 36,
+      justifyContent: 'center',
+      width: 36,
     },
-    emptyBox: {
-      alignItems: 'center',
-      backgroundColor: colors.surface,
-      borderRadius: 12,
-      marginTop: 18,
-      padding: 18,
+    info: { flex: 1 },
+    orderTitle: { fontSize: 15, fontWeight: '900' },
+    orderMeta: { fontSize: 12, fontWeight: '500', marginTop: 2 },
+
+    cardFoot: { alignItems: 'flex-end', marginTop: 10 },
+    actionBtn: {
+      borderRadius: 9,
+      borderWidth: 1,
+      paddingHorizontal: 20,
+      paddingVertical: 7,
     },
-    emptyText: {
-      color: colors.muted,
-      fontSize: 13,
-      fontWeight: '700',
-    },
-    infoText: {
-      color: colors.text,
-      flex: 1,
-      fontSize: 12,
-      fontWeight: '600',
-    },
+    actionText: { fontSize: 13, fontWeight: '800' },
+
+    empty: { borderRadius: 14, borderWidth: 1, padding: 24 },
+    emptyText: { fontSize: 14, fontWeight: '700', textAlign: 'center' },
   });
 }

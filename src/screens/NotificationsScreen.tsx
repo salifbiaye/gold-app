@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Modal, Platform, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -15,6 +15,13 @@ import {
 } from 'lucide-react-native';
 import { Screen } from '../components/Screen';
 import { useAppTheme } from '../context/ThemeContext';
+import {
+  GoldNotification,
+  listNotifications,
+  markAllNotificationsRead,
+  markNotificationRead,
+} from '../services/notifications/notificationService';
+import { serviceConfig } from '../services/serviceConfig';
 import { colors as appColors } from '../theme/colors';
 
 type Notif = {
@@ -25,6 +32,14 @@ type Notif = {
   body: string;
   time: string;
   read: boolean;
+};
+
+const TYPE_META: Record<string, { icon: any; color: string }> = {
+  PAYMENT: { icon: CreditCard, color: '#FF6848' },
+  ORDER: { icon: Package, color: '#0EB56D' },
+  SECURITY: { icon: AlertCircle, color: '#F59E0B' },
+  PROMO: { icon: Bell, color: '#3388F2' },
+  SYSTEM: { icon: CheckCircle2, color: '#0EB56D' },
 };
 
 const INITIAL_NOTIFICATIONS: Notif[] = [
@@ -79,25 +94,47 @@ export function NotificationsScreen() {
   const navigation = useNavigation();
   const { colors } = useAppTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<Notif[]>(serviceConfig.useMock ? INITIAL_NOTIFICATIONS : []);
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const markAllAsRead = () => {
+  useEffect(() => {
+    if (serviceConfig.useMock) return;
+    void loadNotifications();
+  }, []);
+
+  const loadNotifications = async () => {
+    const items = await listNotifications();
+    setNotifications(items.map(toNotif));
+  };
+
+  const markAllAsRead = async () => {
+    if (!serviceConfig.useMock) {
+      await markAllNotificationsRead();
+    }
     setNotifications((items) => items.map((item) => ({ ...item, read: true })));
     setSheetOpen(false);
+  };
+
+  const toggleRead = async (id: string) => {
+    if (!serviceConfig.useMock) {
+      const updated = await markNotificationRead(id);
+      setNotifications((items) => items.map((item) => (item.id === id ? toNotif(updated) : item)));
+      return;
+    }
+    setNotifications((items) => items.map((item) => (item.id === id ? { ...item, read: true } : item)));
   };
 
   return (
     <Screen>
       <View style={styles.header}>
         <TouchableOpacity style={styles.iconButton} activeOpacity={0.78} onPress={() => navigation.goBack()}>
-          <ArrowLeft color={colors.text} size={22} />
+          <ArrowLeft color={colors.text} size={25} strokeWidth={2.4} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Notifications</Text>
         <TouchableOpacity style={styles.iconButton} activeOpacity={0.78} onPress={() => setSheetOpen(true)}>
-          <MoreVertical color={colors.text} size={20} />
+          <MoreVertical color={colors.text} size={23} strokeWidth={2.4} />
         </TouchableOpacity>
       </View>
 
@@ -116,9 +153,9 @@ export function NotificationsScreen() {
         {notifications.map((notif) => {
           const Icon = notif.icon;
           return (
-            <TouchableOpacity key={notif.id} activeOpacity={0.78} style={styles.item}>
+            <TouchableOpacity key={notif.id} activeOpacity={0.78} style={styles.item} onPress={() => toggleRead(notif.id)}>
               <View style={[styles.iconBox, { backgroundColor: `${notif.color}18` }]}>
-                <Icon color={notif.color} size={21} />
+                <Icon color={notif.color} size={25} strokeWidth={2.35} />
               </View>
               <View style={styles.copy}>
                 <View style={styles.titleRow}>
@@ -137,7 +174,7 @@ export function NotificationsScreen() {
 
       {notifications.length === 0 && (
         <View style={styles.empty}>
-          <Bell color={colors.muted} size={40} />
+          <Bell color={colors.muted} size={48} strokeWidth={1.9} />
           <Text style={styles.emptyText}>Aucune notification</Text>
         </View>
       )}
@@ -151,18 +188,43 @@ export function NotificationsScreen() {
           <View style={styles.sheetHeader}>
             <Text style={styles.sheetTitle}>Options notifications</Text>
             <TouchableOpacity style={styles.sheetClose} onPress={() => setSheetOpen(false)}>
-              <X color={colors.muted} size={20} />
+              <X color={colors.muted} size={23} />
             </TouchableOpacity>
           </View>
 
           <TouchableOpacity style={styles.sheetRow} activeOpacity={0.72} onPress={markAllAsRead}>
-            <Check color={colors.text} size={20} />
+            <Check color={colors.text} size={23} strokeWidth={2.4} />
             <Text style={styles.sheetRowText}>Tout marquer comme lu</Text>
           </TouchableOpacity>
         </View>
       </Modal>
     </Screen>
   );
+}
+
+function toNotif(notification: GoldNotification): Notif {
+  const meta = TYPE_META[notification.type] ?? TYPE_META.SYSTEM;
+  return {
+    id: notification.id,
+    icon: meta.icon,
+    color: meta.color,
+    title: notification.title,
+    body: notification.body,
+    time: relativeTime(notification.createdAt),
+    read: notification.read,
+  };
+}
+
+function relativeTime(value?: string | null) {
+  if (!value) return '';
+  const diffMs = Date.now() - new Date(value).getTime();
+  const minutes = Math.max(0, Math.round(diffMs / 60000));
+  if (minutes < 1) return 'Maintenant';
+  if (minutes < 60) return `${minutes} min`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `${hours} h`;
+  const days = Math.round(hours / 24);
+  return days === 1 ? 'Hier' : `${days} j`;
 }
 
 function createStyles(colors: typeof appColors) {
@@ -176,14 +238,14 @@ function createStyles(colors: typeof appColors) {
     },
     iconButton: {
       alignItems: 'center',
-      borderRadius: 18,
-      height: 36,
+      borderRadius: 21,
+      height: 42,
       justifyContent: 'center',
-      width: 36,
+      width: 42,
     },
     headerTitle: {
       color: colors.text,
-      fontSize: 16,
+      fontSize: 22,
       fontWeight: '900',
     },
     filterRow: {
@@ -197,18 +259,18 @@ function createStyles(colors: typeof appColors) {
       alignItems: 'center',
       backgroundColor: colors.text,
       borderRadius: 18,
-      minHeight: 34,
-      paddingHorizontal: 15,
+      minHeight: 40,
+      paddingHorizontal: 17,
       justifyContent: 'center',
     },
     filterText: {
       color: colors.background,
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '900',
     },
     unreadText: {
       color: colors.muted,
-      fontSize: 12,
+      fontSize: 13,
       fontWeight: '800',
     },
     list: {
@@ -217,15 +279,15 @@ function createStyles(colors: typeof appColors) {
     },
     item: {
       flexDirection: 'row',
-      gap: 13,
-      paddingVertical: 8,
+      gap: 15,
+      paddingVertical: 10,
     },
     iconBox: {
       alignItems: 'center',
-      borderRadius: 18,
-      height: 46,
+      borderRadius: 22,
+      height: 52,
       justifyContent: 'center',
-      width: 46,
+      width: 52,
     },
     copy: {
       flex: 1,
@@ -239,7 +301,7 @@ function createStyles(colors: typeof appColors) {
     title: {
       color: colors.text,
       flexShrink: 1,
-      fontSize: 14,
+      fontSize: 16,
       fontWeight: '900',
     },
     dot: {
@@ -250,14 +312,14 @@ function createStyles(colors: typeof appColors) {
     },
     body: {
       color: colors.text,
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '600',
-      lineHeight: 17,
+      lineHeight: 20,
       marginTop: 3,
     },
     time: {
       color: colors.muted,
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: '700',
       marginTop: 5,
     },
@@ -270,7 +332,7 @@ function createStyles(colors: typeof appColors) {
     },
     emptyText: {
       color: colors.muted,
-      fontSize: 14,
+      fontSize: 16,
       fontWeight: '700',
     },
     backdrop: {
@@ -298,17 +360,17 @@ function createStyles(colors: typeof appColors) {
     sheetTitle: {
       color: colors.text,
       flex: 1,
-      fontSize: 14,
+      fontSize: 17,
       fontWeight: '900',
       textAlign: 'center',
     },
     sheetClose: {
       alignItems: 'center',
-      height: 32,
+      height: 38,
       justifyContent: 'center',
       position: 'absolute',
       right: 0,
-      width: 32,
+      width: 38,
     },
     sheetRow: {
       alignItems: 'center',
@@ -318,8 +380,9 @@ function createStyles(colors: typeof appColors) {
     },
     sheetRowText: {
       color: colors.text,
-      fontSize: 14,
+      fontSize: 16,
       fontWeight: '800',
     },
   });
 }
+

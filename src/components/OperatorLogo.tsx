@@ -41,6 +41,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: '900',
-    letterSpacing: -0.5,
+    letterSpacing: 0,
   },
 });

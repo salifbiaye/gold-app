@@ -13,12 +13,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Audio } from 'expo-av';
+import { RecordingPresets, requestRecordingPermissionsAsync, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { Mic, Send, Square } from 'lucide-react-native';
+import { HeaderBar } from '../components/HeaderBar';
 import { Screen } from '../components/Screen';
 import { useAppTheme } from '../context/ThemeContext';
-import { apartments } from '../data/mockData';
 import { sendMessage as aiSendMessage } from '../services/chat/chatService';
+import { getApartments } from '../services/realEstate/realEstateService';
+import { useRepositoryQuery } from '../hooks/useRepositoryQuery';
 import { colors as appColors } from '../theme/colors';
 
 type Message = {
@@ -46,8 +48,9 @@ export function ChatScreen() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [isThinking, setIsThinking] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const apartments = useRepositoryQuery(getApartments).data ?? [];
 
-  const recordingRef = useRef<Audio.Recording | null>(null);
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const pulse = useRef(new Animated.Value(1)).current;
   const flatListRef = useRef<FlatList>(null);
 
@@ -90,12 +93,12 @@ export function ChatScreen() {
 
   const startRecording = async () => {
     try {
-      const { status } = await Audio.requestPermissionsAsync();
+      const { status } = await requestRecordingPermissionsAsync();
       if (status !== 'granted') return;
 
-      await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
-      const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
-      recordingRef.current = recording;
+      await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
+      await recorder.prepareToRecordAsync();
+      recorder.record();
       setIsRecording(true);
       setRecordingSeconds(0);
     } catch {
@@ -106,11 +109,8 @@ export function ChatScreen() {
   const stopRecording = async () => {
     setIsRecording(false);
     try {
-      if (!recordingRef.current) return;
-
-      await recordingRef.current.stopAndUnloadAsync();
-      const uri = recordingRef.current.getURI();
-      recordingRef.current = null;
+      await recorder.stop();
+      const uri = recorder.uri;
       setRecordingSeconds(0);
 
       if (uri) {
@@ -123,7 +123,7 @@ export function ChatScreen() {
         });
       }
     } catch {
-      recordingRef.current = null;
+      setRecordingSeconds(0);
     }
   };
 
@@ -149,7 +149,8 @@ export function ChatScreen() {
   };
 
   return (
-    <Screen scroll={false} edges={['left', 'right']}>
+    <Screen scroll={false}>
+      <HeaderBar title="Chat IA" />
       <KeyboardAvoidingView style={styles.chatShell} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
         <FlatList
           ref={flatListRef}
@@ -178,12 +179,6 @@ export function ChatScreen() {
                 setIsRefreshing(false);
               }}
             />
-          }
-          ListHeaderComponent={
-            <View style={styles.titleRow}>
-              <View style={styles.titleDot} />
-              <Text style={styles.screenTitle}>Chat IA</Text>
-            </View>
           }
           onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
           ListFooterComponent={
@@ -274,7 +269,7 @@ export function ChatScreen() {
 
           {!isRecording && inputText.trim().length > 0 && (
             <TouchableOpacity style={styles.sendButton} activeOpacity={0.85} onPress={() => sendMessage(inputText)}>
-              <Send color="#FFFFFF" size={19} />
+              <Send color="#FFFFFF" size={23} strokeWidth={2.35} />
             </TouchableOpacity>
           )}
 
@@ -285,7 +280,7 @@ export function ChatScreen() {
               onPress={toggleRecording}
             >
               <Animated.View style={{ transform: [{ scale: pulse }] }}>
-                {isRecording ? <Square color="#FFFFFF" size={19} /> : <Mic color="#FFFFFF" size={21} />}
+                {isRecording ? <Square color="#FFFFFF" size={23} /> : <Mic color="#FFFFFF" size={25} />}
               </Animated.View>
             </TouchableOpacity>
           )}
@@ -297,25 +292,6 @@ export function ChatScreen() {
 
 function createStyles(colors: typeof appColors) {
   return StyleSheet.create({
-    titleRow: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      gap: 8,
-      marginBottom: 6,
-      marginTop: 2,
-    },
-    titleDot: {
-      backgroundColor: colors.primary,
-      borderRadius: 3,
-      height: 6,
-      width: 6,
-    },
-    screenTitle: {
-      color: colors.text,
-      flex: 1,
-      fontSize: 18,
-      fontWeight: '900',
-    },
     chatShell: {
       flex: 1,
     },
@@ -358,15 +334,15 @@ function createStyles(colors: typeof appColors) {
     },
     userText: {
       color: '#FFFFFF',
-      fontSize: 13,
+      fontSize: 15,
       fontWeight: '700',
-      lineHeight: 19,
+      lineHeight: 22,
     },
     aiText: {
       color: colors.text,
-      fontSize: 13,
+      fontSize: 15,
       fontWeight: '600',
-      lineHeight: 19,
+      lineHeight: 22,
     },
     cardsRow: {
       gap: 10,
@@ -379,7 +355,7 @@ function createStyles(colors: typeof appColors) {
       borderRadius: 14,
       borderWidth: StyleSheet.hairlineWidth,
       overflow: 'hidden',
-      width: 158,
+      width: 176,
     },
     apartmentImage: {
       height: 96,
@@ -390,24 +366,24 @@ function createStyles(colors: typeof appColors) {
     },
     apartmentTitle: {
       color: colors.text,
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '900',
     },
     apartmentDistrict: {
       color: colors.muted,
-      fontSize: 11,
+      fontSize: 13,
       fontWeight: '600',
       marginTop: 4,
     },
     apartmentPrice: {
       color: colors.text,
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '900',
       marginTop: 10,
     },
     rating: {
       color: colors.warning,
-      fontSize: 11,
+      fontSize: 13,
       fontWeight: '900',
       marginTop: 7,
     },
@@ -432,7 +408,7 @@ function createStyles(colors: typeof appColors) {
     },
     filterText: {
       color: colors.text,
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '800',
     },
     filterTextActive: {
@@ -442,7 +418,7 @@ function createStyles(colors: typeof appColors) {
       alignItems: 'center',
       backgroundColor: colors.surface,
       borderColor: colors.border,
-      borderRadius: 18,
+      borderRadius: 20,
       borderWidth: 1,
       flexDirection: 'row',
       gap: 8,
@@ -452,28 +428,28 @@ function createStyles(colors: typeof appColors) {
     input: {
       color: colors.text,
       flex: 1,
-      fontSize: 13,
+      fontSize: 15,
       fontWeight: '600',
       maxHeight: 86,
-      minHeight: 38,
+      minHeight: 44,
       paddingHorizontal: 10,
       paddingVertical: 7,
     },
     sendButton: {
       alignItems: 'center',
       backgroundColor: colors.primary,
-      borderRadius: 21,
-      height: 42,
+      borderRadius: 24,
+      height: 48,
       justifyContent: 'center',
-      width: 42,
+      width: 48,
     },
     micButton: {
       alignItems: 'center',
       backgroundColor: colors.primary,
-      borderRadius: 21,
-      height: 42,
+      borderRadius: 24,
+      height: 48,
       justifyContent: 'center',
-      width: 42,
+      width: 48,
     },
     micButtonRecording: {
       backgroundColor: colors.danger,
@@ -493,7 +469,7 @@ function createStyles(colors: typeof appColors) {
     },
     recordText: {
       color: colors.text,
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '900',
     },
     wave: {
@@ -509,8 +485,9 @@ function createStyles(colors: typeof appColors) {
     },
     recordTime: {
       color: colors.muted,
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '900',
     },
   });
 }
+

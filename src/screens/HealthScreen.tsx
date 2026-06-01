@@ -10,7 +10,8 @@ import { SectionHeader } from '../components/SectionHeader';
 import { ServiceIntroCard } from '../components/ServiceIntroCard';
 
 import { useAppTheme } from '../context/ThemeContext';
-import { doctors, healthServices } from '../data/mockData';
+import { getDoctors, getHealthServices } from '../services/health/healthService';
+import { useRepositoryQuery } from '../hooks/useRepositoryQuery';
 import { colors as appColors } from '../theme/colors';
 
 const PHARMACIES = [
@@ -56,6 +57,8 @@ export function HealthScreen() {
   const styles = useMemo(() => createStyles(colors), [colors]);
   const isDark = resolvedMode === 'dark';
   const healthMapHTML = buildHealthMapHTML(isDark);
+  const doctors = useRepositoryQuery(getDoctors).data ?? [];
+  const healthServices = useRepositoryQuery(getHealthServices).data ?? [];
 
   return (
     <Screen edges={['left', 'right']}>
@@ -262,3 +265,4 @@ function createStyles(colors: typeof appColors) {
     },
   });
 }
+

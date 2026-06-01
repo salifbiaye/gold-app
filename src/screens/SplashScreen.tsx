@@ -122,3 +122,4 @@ function createStyles(colors: typeof appColors, resolvedMode: 'light' | 'dark') 
     },
   });
 }
+

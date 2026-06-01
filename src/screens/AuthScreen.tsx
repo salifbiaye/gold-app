@@ -11,11 +11,11 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as LocalAuthentication from 'expo-local-authentication';
 import { FingerprintPattern, Lock, Phone, ScanFace, ShieldCheck } from 'lucide-react-native';
 import { authConfig } from '../config/auth';
 import { useAppTheme } from '../context/ThemeContext';
-import { loginWithCredentials } from '../services/auth/authService';
+import { loginWithBiometricSession, loginWithCredentials } from '../services/auth/authService';
+import { biometricLabel, BiometricType, getBiometricCapability } from '../services/security/biometricService';
 import { colors as appColors } from '../theme/colors';
 import { AuthResult } from '../types/auth';
 
@@ -30,23 +30,12 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
   const [password, setPassword] = useState(authConfig.defaultCredentials.password);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [biometricType, setBiometricType] = useState<'faceid' | 'fingerprint' | null>(null);
+  const [biometricType, setBiometricType] = useState<BiometricType | null>(null);
 
   useEffect(() => {
-    (async () => {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      if (!compatible) return;
-
-      const enrolled = await LocalAuthentication.isEnrolledAsync();
-      if (!enrolled) return;
-
-      const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
-      if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
-        setBiometricType('faceid');
-      } else if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
-        setBiometricType('fingerprint');
-      }
-    })();
+    getBiometricCapability()
+      .then((capability) => setBiometricType(capability.type))
+      .catch(() => setBiometricType(null));
   }, []);
 
   const submit = async () => {
@@ -64,24 +53,18 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
 
   const loginWithBiometrics = async () => {
     setError(null);
-    const label = biometricType === 'faceid' ? 'Face ID' : 'empreinte digitale';
+    const label = biometricLabel(biometricType);
 
     try {
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: `Connexion avec ${label}`,
-        cancelLabel: 'Annuler',
-        disableDeviceFallback: true,
-      });
-
-      if (result.success) {
-        setIsLoading(true);
-        const authResult = await loginWithCredentials({ identifier, password });
+      setIsLoading(true);
+      const authResult = await loginWithBiometricSession(`Connexion avec ${label}`);
+      if (authResult) {
         onAuthenticated(authResult);
-      } else if (result.error !== 'user_cancel' && result.error !== 'system_cancel') {
-        setError(`${label} indisponible pour le moment`);
+      } else {
+        setError('Connectez-vous une premiere fois pour activer la biometrie');
       }
     } catch {
-      setError('Biometrie non disponible');
+      setError(`${label} indisponible pour le moment`);
     } finally {
       setIsLoading(false);
     }
@@ -106,7 +89,7 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
           <View style={styles.formCard}>
             <View style={styles.inputGroup}>
               <View style={styles.inputWrap}>
-                <Phone color={colors.muted} size={18} />
+                <Phone color={colors.muted} size={21} strokeWidth={2.3} />
                 <TextInput
                   autoCapitalize="none"
                   keyboardType="phone-pad"
@@ -119,7 +102,7 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
               </View>
 
               <View style={styles.inputWrap}>
-                <Lock color={colors.muted} size={18} />
+                <Lock color={colors.muted} size={21} strokeWidth={2.3} />
                 <TextInput
                   onChangeText={setPassword}
                   placeholder="Mot de passe"
@@ -151,7 +134,7 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
                   activeOpacity={0.86}
                   onPress={loginWithBiometrics}
                 >
-                  <BioIcon color={colors.primary} size={22} strokeWidth={2} />
+                  <BioIcon color={colors.primary} size={25} strokeWidth={2.3} />
                   <Text style={styles.bioButtonText}>
                     {biometricType === 'faceid' ? 'Utiliser Face ID' : 'Utiliser empreinte'}
                   </Text>
@@ -161,7 +144,7 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
           </View>
 
           <View style={styles.footer}>
-            <ShieldCheck color={colors.primary} size={15} />
+            <ShieldCheck color={colors.primary} size={18} strokeWidth={2.3} />
             <Text style={styles.footerText}>Connexion chiffree - API et credentials centralises dans config</Text>
           </View>
         </ScrollView>
@@ -184,7 +167,7 @@ function createStyles(colors: typeof appColors, resolvedMode: 'light' | 'dark') 
     content: {
       flexGrow: 1,
       justifyContent: 'center',
-      padding: 22,
+      padding: 24,
     },
     topBlock: {
       alignItems: 'center',
@@ -223,20 +206,20 @@ function createStyles(colors: typeof appColors, resolvedMode: 'light' | 'dark') 
     },
     brand: {
       color: colors.text,
-      fontSize: 15,
+      fontSize: 16,
       fontWeight: '900',
       textTransform: 'uppercase',
     },
     title: {
       color: colors.text,
-      fontSize: 28,
+      fontSize: 31,
       fontWeight: '900',
       marginTop: 14,
       textAlign: 'center',
     },
     subtitle: {
       color: colors.muted,
-      fontSize: 14,
+      fontSize: 15,
       fontWeight: '700',
       lineHeight: 21,
       marginTop: 8,
@@ -246,9 +229,9 @@ function createStyles(colors: typeof appColors, resolvedMode: 'light' | 'dark') 
     formCard: {
       backgroundColor: colors.surface,
       borderColor: colors.border,
-      borderRadius: 22,
+      borderRadius: 24,
       borderWidth: 1,
-      padding: 18,
+      padding: 20,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 12 },
       shadowOpacity: dark ? 0.2 : 0.07,
@@ -266,18 +249,18 @@ function createStyles(colors: typeof appColors, resolvedMode: 'light' | 'dark') 
       borderWidth: 1,
       flexDirection: 'row',
       gap: 10,
-      minHeight: 56,
-      paddingHorizontal: 14,
+      minHeight: 62,
+      paddingHorizontal: 16,
     },
     input: {
       color: colors.text,
       flex: 1,
-      fontSize: 15,
+      fontSize: 16,
       fontWeight: '800',
     },
     error: {
       color: colors.danger,
-      fontSize: 12,
+      fontSize: 13,
       fontWeight: '800',
       marginTop: 12,
     },
@@ -287,11 +270,11 @@ function createStyles(colors: typeof appColors, resolvedMode: 'light' | 'dark') 
       borderRadius: 15,
       justifyContent: 'center',
       marginTop: 16,
-      minHeight: 54,
+      minHeight: 60,
     },
     buttonText: {
       color: '#FFFFFF',
-      fontSize: 14,
+      fontSize: 16,
       fontWeight: '900',
     },
     dividerRow: {
@@ -319,12 +302,12 @@ function createStyles(colors: typeof appColors, resolvedMode: 'light' | 'dark') 
       flexDirection: 'row',
       gap: 10,
       justifyContent: 'center',
-      minHeight: 54,
+      minHeight: 60,
       paddingHorizontal: 18,
     },
     bioButtonText: {
       color: colors.text,
-      fontSize: 14,
+      fontSize: 15,
       fontWeight: '900',
     },
     footer: {
@@ -338,9 +321,10 @@ function createStyles(colors: typeof appColors, resolvedMode: 'light' | 'dark') 
     footerText: {
       color: colors.muted,
       flexShrink: 1,
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: '800',
       textAlign: 'center',
     },
   });
 }
+
