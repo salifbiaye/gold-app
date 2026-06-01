@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
     width: 62,
   },
   label: {
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: 12,
+    fontWeight: '400',
     maxWidth: '94%',
     textAlign: 'center',
   },

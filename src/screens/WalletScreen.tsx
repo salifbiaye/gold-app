@@ -608,8 +608,8 @@ const styles = StyleSheet.create({
     width: 62,
   },
   actionText: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '400',
     maxWidth: '95%',
     textAlign: 'center',
   },

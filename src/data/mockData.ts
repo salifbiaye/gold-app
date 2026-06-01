@@ -61,7 +61,7 @@ export const popularServices: ServiceItem[] = [
   { id: 'food',        label: 'Alimentation',icon: Utensils,        tint: '#0DB574', route: 'Food'       },
   { id: 'education',   label: 'Education',   icon: GraduationCap,   tint: '#8C54D9', route: 'Education'  },
   { id: 'tourism',     label: 'Tourisme',    icon: Plane,           tint: '#F43F5E', route: 'Tourism'    },
-  { id: 'payments',    label: 'Paiements',   icon: CreditCard,      tint: '#6366F1', route: 'Payments'   },
+  { id: 'payments',    label: 'Paiements',   icon: WalletCards,     tint: '#6366F1', route: 'Payments'   },
 ];
 
 export const walletActions: IconAction[] = [
