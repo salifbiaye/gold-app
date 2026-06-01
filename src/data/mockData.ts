@@ -9,10 +9,12 @@ import {
   CreditCard,
   GraduationCap,
   MoreHorizontal,
+  Navigation,
   Pill,
   Plane,
   QrCode,
   Receipt,
+  ReceiptText,
   Send,
   ShoppingCart,
   Smartphone,
@@ -63,12 +65,12 @@ export const popularServices: ServiceItem[] = [
 ];
 
 export const walletActions: IconAction[] = [
-  { id: 'transfer', label: 'Transférer',  icon: Send             },
+  { id: 'transfer', label: 'Transférer',  icon: Navigation       },
   { id: 'scan',     label: 'Scanner QR',  icon: QrCode           },
   { id: 'pay',      label: 'Payer',       icon: CreditCard       },
   { id: 'withdraw', label: 'Retirer',     icon: ArrowDownToLine  },
   { id: 'topup',    label: 'Recharger',   icon: CirclePlus       },
-  { id: 'bills',    label: 'Factures',    icon: Receipt          },
+  { id: 'bills',    label: 'Factures',    icon: ReceiptText      },
   { id: 'credit',   label: 'Crédit tél.', icon: Smartphone       },
   { id: 'more',     label: 'Plus',        icon: MoreHorizontal   },
 ];
