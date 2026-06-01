@@ -61,12 +61,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: '900',
+    fontWeight: '700',
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '400',
     marginTop: 2,
     textAlign: 'center',
   },

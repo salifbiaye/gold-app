@@ -188,7 +188,7 @@ function createStyles(colors: typeof appColors) {
     mapLinkText: {
       color: colors.primary,
       fontSize: 11,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     mapBadge: {
       alignItems: 'center',
@@ -202,7 +202,7 @@ function createStyles(colors: typeof appColors) {
     mapBadgeText: {
       color: '#FFFFFF',
       fontSize: 11,
-      fontWeight: '700',
+      fontWeight: '400',
     },
     routeCard: {
       backgroundColor: colors.surface,
@@ -219,12 +219,12 @@ function createStyles(colors: typeof appColors) {
     label: {
       color: colors.muted,
       fontSize: 11,
-      fontWeight: '700',
+      fontWeight: '400',
     },
     value: {
       color: colors.text,
       fontSize: 13,
-      fontWeight: '900',
+      fontWeight: '600',
       marginTop: 4,
     },
     divider: {
@@ -272,7 +272,7 @@ function createStyles(colors: typeof appColors) {
     optionTitle: {
       color: colors.text,
       fontSize: 13,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     optionTime: {
       color: colors.muted,
@@ -282,7 +282,7 @@ function createStyles(colors: typeof appColors) {
     optionPrice: {
       color: colors.text,
       fontSize: 13,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     selectedPrice: {
       color: colors.primary,
@@ -297,7 +297,7 @@ function createStyles(colors: typeof appColors) {
     confirmText: {
       color: '#FFFFFF',
       fontSize: 14,
-      fontWeight: '900',
+      fontWeight: '600',
     },
   });
 }

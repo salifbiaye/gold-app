@@ -106,8 +106,8 @@ function createStyles(colors: typeof appColors, _resolvedMode: 'light' | 'dark')
       padding: 14,
     },
     askCopy: { flex: 1 },
-    askTitle: { color: colors.text, fontSize: 15, fontWeight: '800' },
-    askHint: { color: colors.muted, fontSize: 12, fontWeight: '600', marginTop: 3 },
+    askTitle: { color: colors.text, fontSize: 15, fontWeight: '500' },
+    askHint: { color: colors.muted, fontSize: 12, fontWeight: '400', marginTop: 3 },
     aiButton: {
       alignItems: 'center',
       backgroundColor: colors.primary,
@@ -131,9 +131,8 @@ function createStyles(colors: typeof appColors, _resolvedMode: 'light' | 'dark')
       overflow: 'hidden',
       padding: 14,
     },
-    promoTitle: { color: colors.text, fontSize: 15, fontWeight: '900' },
-    promoText: { color: colors.muted, fontSize: 12, fontWeight: '700', marginTop: 4 },
+    promoTitle: { color: colors.text, fontSize: 15, fontWeight: '600' },
+    promoText: { color: colors.muted, fontSize: 12, fontWeight: '400', marginTop: 4 },
     promoImage: { borderRadius: 10, height: 58, width: 84 },
   });
 }
-

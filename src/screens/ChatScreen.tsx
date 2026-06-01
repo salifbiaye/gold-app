@@ -6,7 +6,6 @@ import {
   ImageStyle,
   KeyboardAvoidingView,
   Platform,
-  RefreshControl,
   StyleSheet,
   Text,
   TextInput,
@@ -14,7 +13,7 @@ import {
   View,
 } from 'react-native';
 import { RecordingPresets, requestRecordingPermissionsAsync, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
-import { Mic, Send, Square } from 'lucide-react-native';
+import { Mic, RefreshCcw, Send, Square } from 'lucide-react-native';
 import { HeaderBar } from '../components/HeaderBar';
 import { Screen } from '../components/Screen';
 import { useAppTheme } from '../context/ThemeContext';
@@ -47,7 +46,6 @@ export function ChatScreen() {
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [isThinking, setIsThinking] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const apartments = useRepositoryQuery(getApartments).data ?? [];
 
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -135,6 +133,14 @@ export function ChatScreen() {
     }
   };
 
+  const refreshChat = () => {
+    setMessages(INITIAL_MESSAGES);
+    setInputText('');
+    setActiveFilter(null);
+    setIsThinking(false);
+    setRecordingSeconds(0);
+  };
+
   const recordingTime = `0:${recordingSeconds.toString().padStart(2, '0')}`;
 
   const renderMessage = ({ item }: { item: Message }) => {
@@ -151,6 +157,15 @@ export function ChatScreen() {
   return (
     <Screen scroll={false} edges={['top', 'left', 'right', 'bottom']}>
       <HeaderBar title="Chat IA" />
+      <View style={styles.refreshRow}>
+        <TouchableOpacity
+          activeOpacity={0.82}
+          onPress={refreshChat}
+          style={[styles.refreshButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        >
+          <RefreshCcw color={colors.text} size={20} strokeWidth={2.2} />
+        </TouchableOpacity>
+      </View>
       <KeyboardAvoidingView style={styles.chatShell} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
         <FlatList
           ref={flatListRef}
@@ -162,24 +177,6 @@ export function ChatScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.messages}
-          refreshControl={
-            <RefreshControl
-              colors={[colors.primary]}
-              progressBackgroundColor={colors.surface}
-              refreshing={isRefreshing}
-              tintColor={colors.primary}
-              titleColor={colors.muted}
-              onRefresh={async () => {
-                setIsRefreshing(true);
-                await new Promise((resolve) => setTimeout(resolve, 800));
-                setMessages(INITIAL_MESSAGES);
-                setInputText('');
-                setActiveFilter(null);
-                setIsThinking(false);
-                setIsRefreshing(false);
-              }}
-            />
-          }
           onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
           ListFooterComponent={
             <View style={styles.footer}>
@@ -295,9 +292,22 @@ function createStyles(colors: typeof appColors) {
     chatShell: {
       flex: 1,
     },
+    refreshRow: {
+      alignItems: 'flex-end',
+      marginBottom: 2,
+      marginTop: -4,
+    },
+    refreshButton: {
+      alignItems: 'center',
+      borderRadius: 18,
+      borderWidth: StyleSheet.hairlineWidth,
+      height: 36,
+      justifyContent: 'center',
+      width: 36,
+    },
     messages: {
       paddingBottom: 16,
-      paddingTop: 14,
+      paddingTop: 8,
     },
     footer: {
       paddingBottom: 4,
@@ -335,13 +345,13 @@ function createStyles(colors: typeof appColors) {
     userText: {
       color: '#FFFFFF',
       fontSize: 15,
-      fontWeight: '700',
+      fontWeight: '500',
       lineHeight: 22,
     },
     aiText: {
       color: colors.text,
       fontSize: 15,
-      fontWeight: '600',
+      fontWeight: '400',
       lineHeight: 22,
     },
     cardsRow: {
@@ -367,24 +377,24 @@ function createStyles(colors: typeof appColors) {
     apartmentTitle: {
       color: colors.text,
       fontSize: 14,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     apartmentDistrict: {
       color: colors.muted,
       fontSize: 13,
-      fontWeight: '600',
+      fontWeight: '400',
       marginTop: 4,
     },
     apartmentPrice: {
       color: colors.text,
       fontSize: 14,
-      fontWeight: '900',
+      fontWeight: '600',
       marginTop: 10,
     },
     rating: {
       color: colors.warning,
       fontSize: 13,
-      fontWeight: '900',
+      fontWeight: '600',
       marginTop: 7,
     },
     filters: {
@@ -409,7 +419,7 @@ function createStyles(colors: typeof appColors) {
     filterText: {
       color: colors.text,
       fontSize: 14,
-      fontWeight: '800',
+      fontWeight: '500',
     },
     filterTextActive: {
       color: colors.primary,
@@ -470,7 +480,7 @@ function createStyles(colors: typeof appColors) {
     recordText: {
       color: colors.text,
       fontSize: 14,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     wave: {
       alignItems: 'center',
@@ -486,8 +496,7 @@ function createStyles(colors: typeof appColors) {
     recordTime: {
       color: colors.muted,
       fontSize: 14,
-      fontWeight: '900',
+      fontWeight: '600',
     },
   });
 }
-

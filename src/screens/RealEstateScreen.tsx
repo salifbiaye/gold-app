@@ -98,7 +98,7 @@ function createStyles(colors: typeof appColors) {
     filterText: {
       color: colors.text,
       fontSize: 12,
-      fontWeight: '700',
+      fontWeight: '400',
     },
     activeFilterText: {
       color: '#FFFFFF',
@@ -122,7 +122,7 @@ function createStyles(colors: typeof appColors) {
     title: {
       color: colors.text,
       fontSize: 13,
-      fontWeight: '900',
+      fontWeight: '600',
       marginHorizontal: 10,
       marginTop: 10,
     },
@@ -135,14 +135,14 @@ function createStyles(colors: typeof appColors) {
     price: {
       color: colors.text,
       fontSize: 12,
-      fontWeight: '900',
+      fontWeight: '600',
       marginHorizontal: 10,
       marginTop: 9,
     },
     rating: {
       color: colors.warning,
       fontSize: 11,
-      fontWeight: '800',
+      fontWeight: '500',
       marginHorizontal: 10,
       marginTop: 6,
     },
@@ -162,7 +162,7 @@ function createStyles(colors: typeof appColors) {
     lightButtonText: {
       color: colors.text,
       fontSize: 13,
-      fontWeight: '800',
+      fontWeight: '500',
     },
   });
 }

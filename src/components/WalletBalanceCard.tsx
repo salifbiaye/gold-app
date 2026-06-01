@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Check, ChevronDown, Eye, EyeOff, MoreHorizontal, Plus, QrCode, Search, Send, X } from 'lucide-react-native';
+import { Check, ChevronDown, Eye, EyeOff, Search, X } from 'lucide-react-native';
 import { OperatorLogo } from './OperatorLogo';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -20,8 +20,16 @@ import { PressScale } from './PressScale';
 import { DeviceContact, useDeviceContacts } from '../hooks/useDeviceContacts';
 import { requestBiometricAuth } from '../services/security/biometricService';
 import { IconComponent } from '../types/icon';
+import { materialCommunityIcon } from './AppIconSet';
 
 type SheetType = 'topup' | 'transfer' | null;
+
+const cardActionIcons = {
+  more: materialCommunityIcon('dots-horizontal'),
+  qrcode: materialCommunityIcon('qrcode-scan'),
+  topup: materialCommunityIcon('plus'),
+  transfer: materialCommunityIcon('send'),
+};
 
 const SHEET_CONFIG: Record<
   Exclude<SheetType, null>,
@@ -84,11 +92,11 @@ export function WalletBalanceCard() {
         </Text>
 
         <View style={styles.actions}>
-          <MiniAction icon={Plus}          label="Recharger"  onPress={() => openSheet('topup')} />
-          <MiniAction icon={Send}          label="Transférer" onPress={() => openSheet('transfer')} />
-          <MiniAction icon={QrCode}        label="QR Code"    onPress={handleScan} />
+          <MiniAction icon={cardActionIcons.topup}    label="Recharger"  onPress={() => openSheet('topup')} />
+          <MiniAction icon={cardActionIcons.transfer} label="Transférer" onPress={() => openSheet('transfer')} />
+          <MiniAction icon={cardActionIcons.qrcode}   label="QR Code"    onPress={handleScan} />
           <MiniAction
-            icon={MoreHorizontal}
+            icon={cardActionIcons.more}
             label="Plus"
             onPress={() => navigation.navigate('MainTabs', { screen: 'Wallet' })}
           />
@@ -394,7 +402,7 @@ const styles = StyleSheet.create({
   label: {
     color: 'rgba(255,255,255,0.78)',
     fontSize: 14,
-    fontWeight: '800',
+    fontWeight: '500',
   },
   amount: {
     color: '#FFFFFF',
@@ -419,7 +427,7 @@ const styles = StyleSheet.create({
   actionLabel: {
     color: '#FFFFFF',
     fontSize: 11,
-    fontWeight: '800',
+    fontWeight: '500',
   },
   // Modal & sheet
   modalWrap: {
@@ -452,7 +460,7 @@ const styles = StyleSheet.create({
   },
   sheetTitle: {
     fontSize: 16,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   sheetClose: {
     alignItems: 'center',
@@ -468,7 +476,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '400',
     paddingHorizontal: 14,
     paddingVertical: 13,
   },
@@ -481,7 +489,7 @@ const styles = StyleSheet.create({
   inputInner: {
     flex: 1,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '400',
     paddingHorizontal: 14,
     paddingVertical: 13,
   },
@@ -493,7 +501,7 @@ const styles = StyleSheet.create({
   },
   contactsHeader: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: '500',
     paddingHorizontal: 14,
     paddingTop: 10,
     paddingBottom: 4,
@@ -515,11 +523,11 @@ const styles = StyleSheet.create({
   contactInitials: {
     color: '#FFFFFF',
     fontSize: 11,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   contactName: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '400',
   },
   contactPhone: {
     fontSize: 11,
@@ -567,7 +575,7 @@ const styles = StyleSheet.create({
   submitText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   successWrap: {
     alignItems: 'center',
@@ -579,7 +587,7 @@ const styles = StyleSheet.create({
   },
   successTitle: {
     fontSize: 16,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   successSub: {
     fontSize: 13,
@@ -596,6 +604,6 @@ const styles = StyleSheet.create({
   closeBtnText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '900',
+    fontWeight: '600',
   },
 });

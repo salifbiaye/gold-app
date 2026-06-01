@@ -32,10 +32,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 17,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   action: {
     fontSize: 13,
-    fontWeight: '800',
+    fontWeight: '600',
   },
 });

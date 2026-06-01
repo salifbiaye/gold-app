@@ -174,7 +174,7 @@ function createStyles(colors: typeof appColors) {
     title: {
       color: colors.text,
       fontSize: 13,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     meta: {
       color: colors.muted,
@@ -210,7 +210,7 @@ function createStyles(colors: typeof appColors) {
     submitText: {
       color: '#FFFFFF',
       fontSize: 13,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     successRow: {
       alignItems: 'center',
@@ -219,7 +219,7 @@ function createStyles(colors: typeof appColors) {
     successText: {
       color: colors.primary,
       fontSize: 13,
-      fontWeight: '800',
+      fontWeight: '500',
     },
   });
 }

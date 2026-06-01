@@ -246,7 +246,7 @@ function createStyles(colors: typeof appColors) {
     headerTitle: {
       color: colors.text,
       fontSize: 22,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     filterRow: {
       alignItems: 'center',
@@ -266,12 +266,12 @@ function createStyles(colors: typeof appColors) {
     filterText: {
       color: colors.background,
       fontSize: 14,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     unreadText: {
       color: colors.muted,
       fontSize: 13,
-      fontWeight: '800',
+      fontWeight: '500',
     },
     list: {
       gap: 12,
@@ -302,7 +302,7 @@ function createStyles(colors: typeof appColors) {
       color: colors.text,
       flexShrink: 1,
       fontSize: 16,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     dot: {
       backgroundColor: colors.primary,
@@ -320,7 +320,7 @@ function createStyles(colors: typeof appColors) {
     time: {
       color: colors.muted,
       fontSize: 12,
-      fontWeight: '700',
+      fontWeight: '400',
       marginTop: 5,
     },
     empty: {
@@ -333,7 +333,7 @@ function createStyles(colors: typeof appColors) {
     emptyText: {
       color: colors.muted,
       fontSize: 16,
-      fontWeight: '700',
+      fontWeight: '400',
     },
     backdrop: {
       ...StyleSheet.absoluteFillObject,
@@ -361,7 +361,7 @@ function createStyles(colors: typeof appColors) {
       color: colors.text,
       flex: 1,
       fontSize: 17,
-      fontWeight: '900',
+      fontWeight: '600',
       textAlign: 'center',
     },
     sheetClose: {
@@ -381,7 +381,7 @@ function createStyles(colors: typeof appColors) {
     sheetRowText: {
       color: colors.text,
       fontSize: 16,
-      fontWeight: '800',
+      fontWeight: '500',
     },
   });
 }

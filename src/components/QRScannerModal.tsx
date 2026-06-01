@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   iconBtn: {
     alignItems: 'center',
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     color: '#FFFFFF',
     fontSize: 13,
-    fontWeight: '800',
+    fontWeight: '500',
     overflow: 'hidden',
     paddingHorizontal: 16,
     paddingVertical: 9,
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   permTitle: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: '900',
+    fontWeight: '600',
     textAlign: 'center',
   },
   permText: {
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
   permBtnText: {
     color: '#FFFFFF',
     fontSize: 13,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   cardWrap: {
     alignItems: 'center',
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
   cardName: {
     color: '#0D0D0D',
     fontSize: 18,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   cardPhone: {
     color: '#666666',
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
   tabLabel: {
     color: '#FFFFFF',
     fontSize: 13,
-    fontWeight: '800',
+    fontWeight: '500',
   },
   tabLabelActive: {
     color: '#0D0D0D',

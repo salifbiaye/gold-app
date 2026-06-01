@@ -70,6 +70,6 @@ const styles = StyleSheet.create({
   label: {
     color: '#75808B',
     fontSize: 11,
-    fontWeight: '800',
+    fontWeight: '600',
   },
 });

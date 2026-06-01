@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { Platform, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { Animated, Platform, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { NavigationContext } from '@react-navigation/core';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -90,6 +90,61 @@ function HomeStackScreen() {
       <HomeStack.Screen name="Payments"   component={PaymentsScreen}  />
       <HomeStack.Screen name="Map"        component={MapScreen}       />
     </HomeStack.Navigator>
+  );
+}
+
+function MobileTabButton({
+  activeColor,
+  cfg,
+  inactiveColor,
+  index,
+  onPress,
+  position,
+}: {
+  activeColor: string;
+  cfg: { icon: IconComponent; label: string };
+  inactiveColor: string;
+  index: number;
+  onPress: () => void;
+  position: any;
+}) {
+  const Icon = cfg.icon;
+  const inputRange = Object.keys(tabConfig).map((_, i) => i);
+  const activeOpacity = position.interpolate({
+    inputRange,
+    outputRange: inputRange.map((i) => (i === index ? 1 : 0)),
+    extrapolate: 'clamp',
+  });
+  const inactiveOpacity = position.interpolate({
+    inputRange,
+    outputRange: inputRange.map((i) => (i === index ? 0 : 1)),
+    extrapolate: 'clamp',
+  });
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.82}
+      onPress={onPress}
+      style={styles.mobileTab}
+    >
+      <View style={styles.mobileIconSlot}>
+        <Animated.View style={[styles.mobileLayer, { opacity: inactiveOpacity }]}>
+          <Icon color={inactiveColor} size={25} strokeWidth={2.25} />
+        </Animated.View>
+        <Animated.View style={[styles.mobileLayer, { opacity: activeOpacity }]}>
+          <Icon color={activeColor} size={25} strokeWidth={2.25} />
+        </Animated.View>
+      </View>
+
+      <View style={styles.mobileLabelSlot}>
+        <Animated.Text style={[styles.tabLabel, styles.mobileLayer, { color: inactiveColor, opacity: inactiveOpacity }]}>
+          {cfg.label}
+        </Animated.Text>
+        <Animated.Text style={[styles.tabLabel, styles.mobileLayer, { color: activeColor, opacity: activeOpacity }]}>
+          {cfg.label}
+        </Animated.Text>
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -242,21 +297,17 @@ function MainTabs({ navigation: stackNav }: { navigation: any }) {
                     ]}
                   >
                     {props.state.routes.map((route, i) => {
-                      const active = props.state.index === i;
                       const cfg = tabConfig[route.name as keyof MainTabParamList];
-                      const Icon = cfg.icon;
                       return (
-                        <TouchableOpacity
+                        <MobileTabButton
+                          activeColor={colors.primary}
+                          cfg={cfg}
+                          inactiveColor="#7A8490"
+                          index={i}
                           key={route.key}
                           onPress={() => props.navigation.navigate(route.name)}
-                          activeOpacity={0.82}
-                          style={styles.mobileTab}
-                        >
-                          <Icon color={active ? colors.primary : '#7A8490'} size={25} strokeWidth={2.25} />
-                          <Text style={[styles.tabLabel, { color: active ? colors.primary : '#7A8490' }]}>
-                            {cfg.label}
-                          </Text>
-                        </TouchableOpacity>
+                          position={props.position}
+                        />
                       );
                     })}
                   </View>
@@ -339,12 +390,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   brandDot:  { borderRadius: 6, height: 12, width: 12 },
-  brandName: { fontSize: 17, fontWeight: '900', lineHeight: 20 },
+  brandName: { fontSize: 17, fontWeight: '700', lineHeight: 20 },
   brandSub:  { fontSize: 11, fontWeight: '600', marginTop: 1 },
 
   sidebarBody:       { flex: 1, justifyContent: 'space-between', paddingBottom: 12 },
   sidebarSection:    { paddingHorizontal: 12, paddingTop: 6 },
-  sidebarGroupLabel: { fontSize: 10, fontWeight: '800', letterSpacing: 0.8, marginBottom: 4, paddingHorizontal: 4 },
+  sidebarGroupLabel: { fontSize: 10, fontWeight: '600', letterSpacing: 0.8, marginBottom: 4, paddingHorizontal: 4 },
   sidebarItem: {
     alignItems: 'center',
     borderRadius: 10,
@@ -354,7 +405,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 11,
   },
-  sidebarLabel:   { fontSize: 14, fontWeight: '700' },
+  sidebarLabel:   { fontSize: 14, fontWeight: '500' },
   sidebarDivider: { height: StyleSheet.hairlineWidth, marginHorizontal: 16, marginVertical: 6 },
 
   /* ── Content ────────────────────────────────────────────────── */
@@ -376,5 +427,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 4,
   },
-  tabLabel: { fontSize: 11, fontWeight: '800' },
+  mobileIconSlot: {
+    height: 25,
+    position: 'relative',
+    width: 25,
+  },
+  mobileLabelSlot: {
+    alignItems: 'center',
+    height: 14,
+    position: 'relative',
+    width: '100%',
+  },
+  mobileLayer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  tabLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'center',
+    width: '100%',
+  },
 });

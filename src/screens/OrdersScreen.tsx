@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Bike, Building2, Bus, Package, Utensils } from 'lucide-react-native';
+import { materialCommunityIcon } from '../components/AppIconSet';
 import { HeaderBar } from '../components/HeaderBar';
 import { Screen } from '../components/Screen';
 import { useAppTheme } from '../context/ThemeContext';
@@ -17,13 +17,21 @@ const TABS = [
 
 type TabKey = (typeof TABS)[number]['key'];
 
+const orderIcons = {
+  default: materialCommunityIcon('package-variant-closed'),
+  delivery: materialCommunityIcon('truck-delivery'),
+  food: materialCommunityIcon('silverware-fork-knife'),
+  realEstate: materialCommunityIcon('office-building'),
+  transport: materialCommunityIcon('car'),
+};
+
 function iconFor(order: Order) {
   const t = order.title.toLowerCase();
-  if (t.includes('restaurant') || t.includes('food') || t.includes('repas')) return Utensils;
-  if (t.includes('livraison') || t.includes('course')) return Bike;
-  if (t.includes('appart') || t.includes('immo')) return Building2;
-  if (t.includes('transport') || t.includes('yango') || t.includes('taxi')) return Bus;
-  return Package;
+  if (t.includes('restaurant') || t.includes('food') || t.includes('repas')) return orderIcons.food;
+  if (t.includes('livraison') || t.includes('course')) return orderIcons.delivery;
+  if (t.includes('appart') || t.includes('immo')) return orderIcons.realEstate;
+  if (t.includes('transport') || t.includes('yango') || t.includes('taxi')) return orderIcons.transport;
+  return orderIcons.default;
 }
 
 export function OrdersScreen() {
@@ -129,6 +137,7 @@ function createStyles(colors: typeof appColors) {
       flexDirection: 'row',
       gap: 6,
       marginBottom: 14,
+      marginTop: 10,
     },
     tab: {
       alignItems: 'center',
@@ -137,7 +146,7 @@ function createStyles(colors: typeof appColors) {
       flex: 1,
       paddingVertical: 8,
     },
-    tabText: { fontSize: 12, fontWeight: '800', textAlign: 'center' },
+    tabText: { fontSize: 12, fontWeight: '600', textAlign: 'center' },
 
     list: { gap: 10 },
 
@@ -159,9 +168,9 @@ function createStyles(colors: typeof appColors) {
       justifyContent: 'space-between',
       marginBottom: 8,
     },
-    orderId: { fontSize: 11, fontWeight: '700' },
+    orderId: { fontSize: 11, fontWeight: '400' },
     statusPill: { borderRadius: 7, paddingHorizontal: 8, paddingVertical: 3 },
-    statusText: { fontSize: 11, fontWeight: '800' },
+    statusText: { fontSize: 11, fontWeight: '600' },
 
     cardBody: { alignItems: 'center', flexDirection: 'row', gap: 10 },
     iconCircle: {
@@ -172,7 +181,7 @@ function createStyles(colors: typeof appColors) {
       width: 36,
     },
     info: { flex: 1 },
-    orderTitle: { fontSize: 15, fontWeight: '900' },
+    orderTitle: { fontSize: 15, fontWeight: '600' },
     orderMeta: { fontSize: 12, fontWeight: '500', marginTop: 2 },
 
     cardFoot: { alignItems: 'flex-end', marginTop: 10 },
@@ -182,9 +191,9 @@ function createStyles(colors: typeof appColors) {
       paddingHorizontal: 20,
       paddingVertical: 7,
     },
-    actionText: { fontSize: 13, fontWeight: '800' },
+    actionText: { fontSize: 13, fontWeight: '600' },
 
     empty: { borderRadius: 14, borderWidth: 1, padding: 24 },
-    emptyText: { fontSize: 14, fontWeight: '700', textAlign: 'center' },
+    emptyText: { fontSize: 14, fontWeight: '400', textAlign: 'center' },
   });
 }

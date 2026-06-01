@@ -99,7 +99,7 @@ export function SettingsScreen() {
                 onPress={() => setMode(opt.value)}
               >
                 <Icon color={selected ? colors.primary : colors.muted} size={21} strokeWidth={2.25} />
-                <Text style={[styles.optionLabel, selected && { color: colors.primary, fontWeight: '700' }]}>
+                <Text style={[styles.optionLabel, selected && { color: colors.primary, fontWeight: '400' }]}>
                   {opt.label}
                 </Text>
                 {selected && <Check color={colors.primary} size={20} strokeWidth={2.35} />}
@@ -130,7 +130,7 @@ export function SettingsScreen() {
                 activeOpacity={0.7}
                 onPress={() => setCurrency(c)}
               >
-                <Text style={[styles.optionLabel, selected && { color: colors.primary, fontWeight: '700' }]}>
+                <Text style={[styles.optionLabel, selected && { color: colors.primary, fontWeight: '400' }]}>
                   {c}
                 </Text>
                 {selected && <Check color={colors.primary} size={20} strokeWidth={2.35} />}
@@ -245,12 +245,12 @@ function createStyles(colors: typeof appColors) {
     headerTitle: {
       color: colors.text,
       fontSize: 22,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     sectionLabel: {
       color: colors.muted,
       fontSize: 12,
-      fontWeight: '800',
+      fontWeight: '500',
       letterSpacing: 0.3,
       marginBottom: 6,
       marginTop: 18,
@@ -281,7 +281,7 @@ function createStyles(colors: typeof appColors) {
       color: colors.text,
       flex: 1,
       fontSize: 16,
-      fontWeight: '700',
+      fontWeight: '400',
     },
     switchWrap: {
       alignItems: 'center',
@@ -333,7 +333,7 @@ function createStyles(colors: typeof appColors) {
       color: colors.muted,
       flex: 1,
       fontSize: 16,
-      fontWeight: '700',
+      fontWeight: '400',
     },
     version: {
       color: colors.muted,

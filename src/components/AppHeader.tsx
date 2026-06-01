@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
   left: { alignItems: 'center', flexDirection: 'row', gap: 12 },
   avatar: { borderRadius: 999, height: 44, width: 44 },
-  greeting: { fontSize: 16, fontWeight: '800' },
+  greeting: { fontSize: 16, fontWeight: '600' },
   locationRow: { alignItems: 'center', flexDirection: 'row', gap: 4, marginTop: 2 },
   locationText: { fontSize: 12, fontWeight: '600' },
   bellBtn: {
@@ -110,5 +110,5 @@ const styles = StyleSheet.create({
     right: 4,
     top: 4,
   },
-  badgeText: { color: '#FFF', fontSize: 9, fontWeight: '900' },
+  badgeText: { color: '#FFF', fontSize: 9, fontWeight: '600' },
 });

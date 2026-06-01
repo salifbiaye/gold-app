@@ -47,11 +47,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   text: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '400',
     lineHeight: 18,
     marginTop: 4,
   },

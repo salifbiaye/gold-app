@@ -90,7 +90,7 @@ export function WalletScreen() {
     : {
       gradient: ['#77C996', colors.primaryDark] as const,
       border: 'rgba(255,255,255,0.72)',
-      stage: colors.primarySoft,
+      stage: '#d7ede9',
       shadowOpacity: 0.16,
     };
 
@@ -160,10 +160,13 @@ export function WalletScreen() {
         </LinearGradient>
       </View>
 
-      <SectionHeader title="Actions rapides" />
+      <View style={styles.actionsHeader}>
+        <Text style={[styles.actionsTitle, { color: colors.text }]}>Actions rapides</Text>
+      </View>
       <View style={styles.actionsGrid}>
         {walletActions.map((action) => {
           const Icon = action.icon;
+          const iconColor = '#00a86b';
           return (
             <TouchableOpacity
               key={action.id}
@@ -172,7 +175,12 @@ export function WalletScreen() {
               onPress={() => openAction(action.id)}
             >
               <View style={[styles.actionTile, { backgroundColor: '#d7ede9' }]}>
-                <Icon color="#00a86b" size={24} strokeWidth={2.1} />
+                <Icon
+                  color={iconColor}
+                  fill={action.id === 'transfer' ? iconColor : 'none'}
+                  size={24}
+                  strokeWidth={2.1}
+                />
               </View>
               <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.actionText, { color: colors.text }]}>
                 {action.label}
@@ -559,7 +567,7 @@ const styles = StyleSheet.create({
   balanceLabel: {
     color: 'rgba(255,255,255,0.92)',
     fontSize: 12,
-    fontWeight: '900',
+    fontWeight: '500',
   },
   balance: {
     color: '#FFFFFF',
@@ -578,7 +586,7 @@ const styles = StyleSheet.create({
   details: {
     color: 'rgba(255,255,255,0.88)',
     fontSize: 12,
-    fontWeight: '800',
+    fontWeight: '500',
   },
   qrBox: {
     alignItems: 'center',
@@ -595,6 +603,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     rowGap: 20,
   },
+  actionsHeader: {
+    marginBottom: 10,
+    marginTop: 14,
+  },
+  actionsTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+  },
   actionWrap: {
     alignItems: 'center',
     gap: 8,
@@ -610,6 +626,7 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 12,
     fontWeight: '400',
+    lineHeight: 16,
     maxWidth: '95%',
     textAlign: 'center',
   },
@@ -623,11 +640,11 @@ const styles = StyleSheet.create({
   },
   panelTitle: {
     fontSize: 14,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   panelText: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '400',
     lineHeight: 18,
     marginTop: 10,
   },
@@ -650,7 +667,7 @@ const styles = StyleSheet.create({
   },
   transactionTitle: {
     fontSize: 12,
-    fontWeight: '800',
+    fontWeight: '600',
   },
   transactionMeta: {
     fontSize: 11,
@@ -658,7 +675,7 @@ const styles = StyleSheet.create({
   },
   amount: {
     fontSize: 12,
-    fontWeight: '800',
+    fontWeight: '600',
   },
   // Modal & sheet
   modalWrap: {
@@ -691,7 +708,7 @@ const styles = StyleSheet.create({
   },
   sheetTitle: {
     fontSize: 16,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   sheetClose: {
     alignItems: 'center',
@@ -707,7 +724,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '400',
     paddingHorizontal: 14,
     paddingVertical: 13,
   },
@@ -720,7 +737,7 @@ const styles = StyleSheet.create({
   submitText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   successWrap: {
     alignItems: 'center',
@@ -732,11 +749,11 @@ const styles = StyleSheet.create({
   },
   successTitle: {
     fontSize: 16,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   successSub: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '400',
     textAlign: 'center',
   },
   inputWrap: {
@@ -748,7 +765,7 @@ const styles = StyleSheet.create({
   inputInner: {
     flex: 1,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '400',
     paddingHorizontal: 14,
     paddingVertical: 13,
   },
@@ -760,7 +777,7 @@ const styles = StyleSheet.create({
   },
   contactsHeader: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: '500',
     paddingHorizontal: 14,
     paddingTop: 10,
     paddingBottom: 4,
@@ -782,15 +799,15 @@ const styles = StyleSheet.create({
   contactInitials: {
     color: '#FFFFFF',
     fontSize: 11,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   contactName: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '500',
   },
   contactPhone: {
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: '400',
     marginTop: 1,
   },
   selectedContact: {
@@ -840,7 +857,6 @@ const styles = StyleSheet.create({
   },
   detailValue: {
     fontSize: 13,
-    fontWeight: '800',
+    fontWeight: '500',
   },
 });
-

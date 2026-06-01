@@ -214,12 +214,12 @@ function createStyles(colors: typeof appColors) {
     heroTitle: {
       color: colors.text,
       fontSize: 16,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     heroText: {
       color: colors.muted,
       fontSize: 12,
-      fontWeight: '700',
+      fontWeight: '400',
       lineHeight: 18,
       marginTop: 4,
     },
@@ -240,7 +240,7 @@ function createStyles(colors: typeof appColors) {
     chipText: {
       color: colors.text,
       fontSize: 12,
-      fontWeight: '800',
+      fontWeight: '500',
     },
     activeChipText: {
       color: '#FFFFFF',
@@ -265,12 +265,12 @@ function createStyles(colors: typeof appColors) {
     cardTitle: {
       color: colors.text,
       fontSize: 14,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     cardMeta: {
       color: colors.muted,
       fontSize: 11,
-      fontWeight: '700',
+      fontWeight: '400',
       marginTop: 4,
     },
     cardFooter: {
@@ -281,7 +281,7 @@ function createStyles(colors: typeof appColors) {
     },
     price: {
       fontSize: 12,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     rating: {
       alignItems: 'center',
@@ -291,7 +291,7 @@ function createStyles(colors: typeof appColors) {
     ratingText: {
       color: colors.muted,
       fontSize: 11,
-      fontWeight: '800',
+      fontWeight: '500',
     },
     infoBox: {
       alignItems: 'center',
@@ -308,7 +308,7 @@ function createStyles(colors: typeof appColors) {
       color: colors.muted,
       flex: 1,
       fontSize: 12,
-      fontWeight: '700',
+      fontWeight: '400',
       lineHeight: 18,
     },
     primaryButton: {
@@ -320,7 +320,7 @@ function createStyles(colors: typeof appColors) {
     primaryButtonText: {
       color: '#FFFFFF',
       fontSize: 14,
-      fontWeight: '900',
+      fontWeight: '600',
     },
   });
 }

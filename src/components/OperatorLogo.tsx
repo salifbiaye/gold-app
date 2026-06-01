@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    fontWeight: '900',
+    fontWeight: '600',
     letterSpacing: 0,
   },
 });

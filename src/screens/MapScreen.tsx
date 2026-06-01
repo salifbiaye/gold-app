@@ -361,12 +361,12 @@ function createStyles(colors: typeof appColors) {
     headerTitle: {
       color: colors.text,
       fontSize: 13,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     headerSubtitle: {
       color: colors.muted,
       fontSize: 10,
-      fontWeight: '700',
+      fontWeight: '400',
       marginTop: 1,
     },
     headerSpacer: {
@@ -392,7 +392,7 @@ function createStyles(colors: typeof appColors) {
       elevation: 3,
     },
     activeChip: { backgroundColor: colors.primary },
-    chipText: { color: colors.text, fontSize: 12, fontWeight: '800' },
+    chipText: { color: colors.text, fontSize: 12, fontWeight: '500' },
     activeChipText: { color: '#FFFFFF' },
     centerBtn: {
       alignItems: 'center',
@@ -425,9 +425,9 @@ function createStyles(colors: typeof appColors) {
       justifyContent: 'center',
     },
     driverCopy: { flex: 1, marginLeft: 12 },
-    available: { color: colors.primary, fontSize: 11, fontWeight: '800' },
-    driverName: { color: colors.text, fontSize: 14, fontWeight: '900', marginTop: 2 },
-    ratingText: { color: colors.warning, fontSize: 12, fontWeight: '700', marginTop: 2 },
+    available: { color: colors.primary, fontSize: 11, fontWeight: '500' },
+    driverName: { color: colors.text, fontSize: 14, fontWeight: '600', marginTop: 2 },
+    ratingText: { color: colors.warning, fontSize: 12, fontWeight: '400', marginTop: 2 },
     locationRow: { alignItems: 'center', flexDirection: 'row', gap: 4, marginTop: 3 },
     distanceText: { color: colors.muted, fontSize: 11 },
     callButton: {

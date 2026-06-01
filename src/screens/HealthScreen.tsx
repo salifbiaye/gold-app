@@ -178,7 +178,7 @@ function createStyles(colors: typeof appColors) {
     mapBadgeText: {
       color: '#FFFFFF',
       fontSize: 11,
-      fontWeight: '700',
+      fontWeight: '400',
     },
     services: {
       flexDirection: 'row',
@@ -204,7 +204,7 @@ function createStyles(colors: typeof appColors) {
     serviceText: {
       color: colors.text,
       fontSize: 8,
-      fontWeight: '800',
+      fontWeight: '500',
       maxWidth: '92%',
     },
     list: {
@@ -229,7 +229,7 @@ function createStyles(colors: typeof appColors) {
     doctorName: {
       color: colors.text,
       fontSize: 13,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     doctorJob: {
       color: colors.muted,
@@ -239,7 +239,7 @@ function createStyles(colors: typeof appColors) {
     online: {
       color: colors.primary,
       fontSize: 11,
-      fontWeight: '800',
+      fontWeight: '500',
       marginTop: 3,
     },
     circleButton: {

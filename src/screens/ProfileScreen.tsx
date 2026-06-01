@@ -397,18 +397,18 @@ function createStyles(colors: typeof appColors) {
     name: {
       color: colors.text,
       fontSize: 21,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     handle: {
       color: colors.primary,
       fontSize: 14,
-      fontWeight: '800',
+      fontWeight: '500',
       marginTop: 3,
     },
     verified: {
       color: colors.muted,
       fontSize: 13,
-      fontWeight: '800',
+      fontWeight: '500',
     },
     verifiedRow: {
       alignItems: 'center',
@@ -436,7 +436,7 @@ function createStyles(colors: typeof appColors) {
     profilePillText: {
       color: colors.text,
       fontSize: 15,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     identityCard: {
       alignItems: 'center',
@@ -455,12 +455,12 @@ function createStyles(colors: typeof appColors) {
     identityTitle: {
       color: colors.text,
       fontSize: 16,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     identitySub: {
       color: colors.muted,
       fontSize: 14,
-      fontWeight: '700',
+      fontWeight: '400',
       lineHeight: 20,
       marginTop: 4,
     },
@@ -499,7 +499,7 @@ function createStyles(colors: typeof appColors) {
       color: colors.text,
       flex: 1,
       fontSize: 15,
-      fontWeight: '800',
+      fontWeight: '500',
     },
     // Drawer Apple-style : fond = surface (blanc en light, surface sombre en dark), pas de gris fort
     drawer: {
@@ -558,7 +558,7 @@ function createStyles(colors: typeof appColors) {
     logoutText: {
       color: colors.muted,
       fontSize: 15,
-      fontWeight: '700',
+      fontWeight: '400',
     },
     sheetBackdrop: {
       ...StyleSheet.absoluteFillObject,
@@ -584,7 +584,7 @@ function createStyles(colors: typeof appColors) {
     },
     sheetTitle: {
       fontSize: 18,
-      fontWeight: '900',
+      fontWeight: '600',
     },
     sheetRow: {
       alignItems: 'center',
@@ -602,7 +602,7 @@ function createStyles(colors: typeof appColors) {
     },
     sheetRowTitle: {
       fontSize: 16,
-      fontWeight: '800',
+      fontWeight: '500',
     },
     sheetRowSub: {
       fontSize: 13,
