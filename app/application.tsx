@@ -1,4 +1,5 @@
 import { NavigationIndependentTree } from '@react-navigation/core';
+import { NavigationContainer } from '@react-navigation/native';
 import { Redirect, useRouter } from 'expo-router';
 import { ActivityIndicator, Platform, View } from 'react-native';
 import MobileApplication from '../App';
@@ -41,9 +42,12 @@ function WebAuthGate() {
     logout().catch(() => {}).finally(() => router.replace('/connexion'));
   };
 
+  // NavigationContainer sans `linking` = React Navigation ne met JAMAIS à jour
+  // l'URL du navigateur. L'URL reste /application au lieu de /application/MainTabs/Wallet,
+  // ce qui évite le 404 "Unmatched Route" au refresh.
   return (
-    <NavigationIndependentTree>
+    <NavigationContainer independent>
       <AuthenticatedNavigator auth={auth} logout={handleLogout} />
-    </NavigationIndependentTree>
+    </NavigationContainer>
   );
 }
