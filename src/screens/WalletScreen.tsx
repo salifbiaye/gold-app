@@ -84,13 +84,13 @@ export function WalletScreen() {
     ? {
       gradient: ['#2E8C66', '#08744C'] as const,
       border: 'rgba(218,255,235,0.46)',
-      stage: 'transparent',
+      stage: '#10202B',
       shadowOpacity: 0.24,
     }
     : {
       gradient: ['#77C996', colors.primaryDark] as const,
       border: 'rgba(255,255,255,0.72)',
-      stage: 'transparent',
+      stage: '#d7ede9',
       shadowOpacity: 0.16,
     };
 
@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
   },
   balanceCard: {
     borderRadius: 10,
-    borderWidth: 2,
+    borderWidth: 0,
     justifyContent: 'space-between',
     minHeight: 185,
     overflow: 'hidden',
