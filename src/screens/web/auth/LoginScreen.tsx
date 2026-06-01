@@ -56,27 +56,27 @@ export function LoginScreen() {
     <>
       <WebSeoHead metadata={privateRouteMetadata.connexion} />
       <View style={sx(styles.page, compact && styles.pageCompact)}>
-        {/* LEFT — brand side */}
-        <View style={sx(styles.brandSide, compact && styles.brandSideCompact)}>
-          <View style={styles.brandMesh} />
-          <View style={styles.brandGrid} />
+        {/* LEFT — brand side (desktop only) */}
+        {!compact && (
+          <View style={styles.brandSide}>
+            <View style={styles.brandMesh} />
+            <View style={styles.brandGrid} />
 
-          <View style={styles.brandHeader}>
-            <Pressable onPress={() => router.push('/')} style={styles.brand}>
-              <View style={styles.brandMark}>
-                <Text style={styles.brandMarkText}>G</Text>
-              </View>
-              <Text style={styles.brandText}>
-                Gold<Text style={styles.green}>.</Text>
-              </Text>
-            </Pressable>
-            <Pressable onPress={() => router.push('/')} style={styles.backLink}>
-              <ArrowLeft color="#8DA0AE" size={14} strokeWidth={2.4} />
-              <Text style={styles.backText}>Retour à l'accueil</Text>
-            </Pressable>
-          </View>
+            <View style={styles.brandHeader}>
+              <Pressable onPress={() => router.push('/')} style={styles.brand}>
+                <View style={styles.brandMark}>
+                  <Text style={styles.brandMarkText}>G</Text>
+                </View>
+                <Text style={styles.brandText}>
+                  Gold<Text style={styles.green}>.</Text>
+                </Text>
+              </Pressable>
+              <Pressable onPress={() => router.push('/')} style={styles.backLink}>
+                <ArrowLeft color="#8DA0AE" size={14} strokeWidth={2.4} />
+                <Text style={styles.backText}>Retour à l'accueil</Text>
+              </Pressable>
+            </View>
 
-          {!compact && (
             <View style={styles.brandBody}>
               <View style={styles.brandKickerWrap}>
                 <Text style={styles.brandKicker}>ESPACE SÉCURISÉ</Text>
@@ -96,22 +96,38 @@ export function LoginScreen() {
                 <Feature icon={Sparkles} title="Passkeys" text="Bientôt disponible côté web." />
               </View>
             </View>
-          )}
 
-          {!compact && (
             <View style={styles.brandFooter}>
               <Text style={styles.brandFooterText}>© 2026 Gold App · Dakar, Sénégal</Text>
             </View>
-          )}
-        </View>
+          </View>
+        )}
 
         {/* RIGHT — form side */}
         <View style={sx(styles.formSide, compact && styles.formSideCompact)}>
+          {/* Mobile header — logo + back link */}
+          {compact && (
+            <View style={styles.compactHeader}>
+              <Pressable onPress={() => router.push('/')} style={styles.brand}>
+                <View style={styles.compactMark}>
+                  <Text style={styles.compactMarkText}>G</Text>
+                </View>
+                <Text style={styles.compactBrandText}>Gold<Text style={styles.compactGreen}>.</Text></Text>
+              </Pressable>
+              <Pressable onPress={() => router.push('/')} style={styles.backLink}>
+                <ArrowLeft color="#64736B" size={14} strokeWidth={2.4} />
+                <Text style={styles.compactBackText}>Retour</Text>
+              </Pressable>
+            </View>
+          )}
+
           <View style={styles.formWrap}>
             <View style={styles.formHeader}>
               <Text style={styles.formEyebrow}>CONNEXION</Text>
-              <Text style={styles.formTitle}>Heureux de vous revoir.</Text>
-              <Text style={styles.formSubtitle}>
+              <Text style={sx(styles.formTitle, compact && styles.formTitleCompact)}>
+                Heureux de vous revoir.
+              </Text>
+              <Text style={sx(styles.formSubtitle, compact && styles.formSubtitleCompact)}>
                 Entrez vos identifiants pour accéder à votre espace.
               </Text>
             </View>
@@ -247,7 +263,7 @@ const styles = StyleSheet.create({
   page: { backgroundColor: '#EAF8EF', flex: 1, flexDirection: 'row', fontFamily: SANS as any, minHeight: '100vh' as never },
   pageCompact: { flexDirection: 'column' },
 
-  /* Brand side (dark) */
+  /* Brand side (desktop only) */
   brandSide: {
     backgroundColor: '#0A0F14',
     flex: 1,
@@ -256,7 +272,6 @@ const styles = StyleSheet.create({
     paddingVertical: 48,
     position: 'relative',
   },
-  brandSideCompact: { flex: 0, paddingHorizontal: 24, paddingVertical: 22 },
   brandMesh: {
     backgroundColor: '#0EB56D',
     borderRadius: 999,
@@ -310,15 +325,34 @@ const styles = StyleSheet.create({
   brandFooter: { zIndex: 2 },
   brandFooterText: { color: '#5C6B76', fontFamily: MONO as any, fontSize: 11, fontWeight: '500' },
 
+  /* Mobile compact header */
+  compactHeader: {
+    alignItems: 'center',
+    borderBottomColor: '#CFEADD',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+    paddingBottom: 16,
+    width: '100%',
+  },
+  compactMark: { alignItems: 'center', backgroundColor: '#0A0F14', borderRadius: 8, height: 30, justifyContent: 'center', width: 30 },
+  compactMarkText: { color: '#FFFFFF', fontSize: 16, fontWeight: '900' },
+  compactBrandText: { color: '#0A0F14', fontSize: 17, fontWeight: '800' },
+  compactGreen: { color: '#0EB56D' },
+  compactBackText: { color: '#64736B', fontSize: 13, fontWeight: '600' },
+
   /* Form side (light) */
   formSide: { alignItems: 'center', backgroundColor: '#EAF8EF', flex: 1, justifyContent: 'center', padding: 56 },
-  formSideCompact: { justifyContent: 'flex-start', padding: 22 },
+  formSideCompact: { alignItems: 'stretch', justifyContent: 'flex-start', padding: 22, paddingTop: 18 },
   formWrap: { maxWidth: 420, width: '100%' },
 
-  formHeader: { marginBottom: 36 },
-  formEyebrow: { color: '#0EB56D', fontFamily: MONO as any, fontSize: 12, fontWeight: '800', letterSpacing: 1, marginBottom: 14 },
+  formHeader: { marginBottom: 28 },
+  formEyebrow: { color: '#0EB56D', fontFamily: MONO as any, fontSize: 12, fontWeight: '800', letterSpacing: 1, marginBottom: 10 },
   formTitle: { color: '#0A0F14', fontSize: 40, fontWeight: '900', letterSpacing: 0, lineHeight: 46 },
-  formSubtitle: { color: '#52635A', fontSize: 17, fontWeight: '500', lineHeight: 25, marginTop: 12 },
+  formTitleCompact: { fontSize: 28, lineHeight: 34 },
+  formSubtitle: { color: '#52635A', fontSize: 17, fontWeight: '500', lineHeight: 25, marginTop: 10 },
+  formSubtitleCompact: { fontSize: 15, lineHeight: 22 },
 
   formBody: { gap: 18 },
   fieldWrap: { gap: 8 },
