@@ -1,24 +1,30 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ImageSourcePropType, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ClipboardList, Home, MessageCircle, UserRound, Wallet } from 'lucide-react-native';
+import { ClipboardList, Home, MessageCircle, Wallet } from 'lucide-react-native';
 import { useAppTheme } from '../context/ThemeContext';
+import type { IconComponent } from '../types/icon';
 
-type BottomKey = 'Home' | 'Chat' | 'Orders' | 'Wallet' | 'Profile';
+type BottomKey = 'HomeStack' | 'Chat' | 'Orders' | 'Wallet' | 'PiSpi';
+type BottomItem =
+  | { key: BottomKey; label: string; icon: IconComponent; image?: never }
+  | { key: BottomKey; label: string; icon?: never; image: ImageSourcePropType };
 
 type AppBottomBarProps = {
   active?: BottomKey;
 };
 
-const items = [
-  { key: 'Home', label: 'Accueil', icon: Home },
+const piSpiLogo = require('../../assets/images/pi-spi.logo.png');
+
+const items: BottomItem[] = [
+  { key: 'HomeStack', label: 'Accueil', icon: Home },
   { key: 'Chat', label: 'Chat IA', icon: MessageCircle },
   { key: 'Orders', label: 'Commandes', icon: ClipboardList },
   { key: 'Wallet', label: 'Wallet', icon: Wallet },
-  { key: 'Profile', label: 'Profil', icon: UserRound },
+  { key: 'PiSpi', label: 'PI-SPI', image: piSpiLogo },
 ] as const;
 
-export function AppBottomBar({ active = 'Home' }: AppBottomBarProps) {
+export function AppBottomBar({ active = 'HomeStack' }: AppBottomBarProps) {
   const navigation = useNavigation<any>();
   const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
@@ -34,8 +40,8 @@ export function AppBottomBar({ active = 'Home' }: AppBottomBarProps) {
       },
     ]}>
       {items.map((item) => {
-        const Icon = item.icon;
         const isActive = item.key === active;
+        const Icon = 'icon' in item ? item.icon : null;
 
         return (
           <TouchableOpacity
@@ -44,7 +50,11 @@ export function AppBottomBar({ active = 'Home' }: AppBottomBarProps) {
             style={styles.item}
             onPress={() => navigation.navigate('MainTabs', { screen: item.key })}
           >
-            <Icon color={isActive ? colors.primary : colors.muted} size={25} strokeWidth={2.25} />
+            {'image' in item ? (
+              <Image source={item.image} resizeMode="contain" style={[styles.logoIcon, !isActive && styles.logoIconMuted]} />
+            ) : Icon ? (
+              <Icon color={isActive ? colors.primary : colors.muted} size={25} strokeWidth={2.25} />
+            ) : null}
             <Text style={[styles.label, isActive && { color: colors.primary }]}>{item.label}</Text>
           </TouchableOpacity>
         );
@@ -71,5 +81,12 @@ const styles = StyleSheet.create({
     color: '#75808B',
     fontSize: 11,
     fontWeight: '600',
+  },
+  logoIcon: {
+    height: 25,
+    width: 25,
+  },
+  logoIconMuted: {
+    opacity: 0.58,
   },
 });

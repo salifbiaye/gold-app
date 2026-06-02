@@ -82,16 +82,14 @@ export function WalletScreen() {
   const visibleTransactions = showAllHistory ? transactions : transactions.slice(0, 4);
   const cardTone = resolvedMode === 'dark'
     ? {
-      gradient: ['#2E8C66', '#08744C'] as const,
-      border: 'rgba(218,255,235,0.46)',
-      stage: '#10202B',
-      shadowOpacity: 0.24,
+      gradient: ['#05A66D', '#018A59'] as const,
+      border: 'rgba(255,255,255,0.12)',
+      shadowOpacity: 0.18,
     }
     : {
-      gradient: ['#77C996', colors.primaryDark] as const,
-      border: 'rgba(255,255,255,0.72)',
-      stage: '#d7ede9',
-      shadowOpacity: 0.16,
+      gradient: ['#0AB877', '#009765'] as const,
+      border: 'rgba(255,255,255,0.18)',
+      shadowOpacity: 0.12,
     };
 
   const handleOpenScanner = useCallback(async () => {
@@ -120,45 +118,47 @@ export function WalletScreen() {
   const closeSheet = () => setSelectedAction(null);
 
   return (
-    <Screen>
+    <Screen edges={['left', 'right']}>
       <HeaderBar title="Wallet" />
 
-      <View style={[styles.cardStage, { backgroundColor: cardTone.stage }]}>
-        <LinearGradient
-          colors={cardTone.gradient}
-          style={[
-            styles.balanceCard,
-            { borderColor: cardTone.border, shadowOpacity: cardTone.shadowOpacity },
-          ]}
+      <LinearGradient
+        colors={cardTone.gradient}
+        style={[
+          styles.balanceCard,
+          { borderColor: cardTone.border, shadowOpacity: cardTone.shadowOpacity },
+        ]}
+      >
+        <TouchableOpacity
+          activeOpacity={0.82}
+          onPress={() => setBalanceHidden((v) => !v)}
+          style={styles.eyeButton}
         >
-          <View style={styles.cardTopRow}>
+          {balanceHidden
+            ? <EyeOff color="#FFFFFF" size={16} />
+            : <Eye color="#FFFFFF" size={16} />}
+        </TouchableOpacity>
+
+        <View style={styles.balanceContent}>
+          <View style={styles.balanceCopy}>
             <Text style={styles.balanceLabel}>Solde disponible</Text>
-            <PressScale onPress={() => setBalanceHidden((v) => !v)} haptic="selection" scaleTo={0.82}>
-              <View style={styles.eyeButton}>
-                {balanceHidden
-                  ? <EyeOff color="#FFFFFF" size={16} />
-                  : <Eye color="#FFFFFF" size={16} />}
-              </View>
+            <Text style={styles.balance}>
+              {balanceHidden ? '......' : '125 600 FCFA'}
+            </Text>
+            <PressScale onPress={() => openAction('details')} haptic="light" scaleTo={0.94}>
+              <Text style={styles.details}>Voir détails ›</Text>
             </PressScale>
           </View>
 
-          <Text style={styles.balance}>
-            {balanceHidden ? '......' : '125 600 FCFA'}
-          </Text>
-
-          <View style={styles.cardBottomRow}>
-            <PressScale onPress={() => openAction('details')} haptic="light" scaleTo={0.94}>
-              <Text style={styles.details}>Voir details</Text>
-            </PressScale>
-
+          <View style={styles.qrColumn}>
             <PressScale onPress={handleOpenScanner} haptic="medium" scaleTo={0.93}>
               <View style={styles.qrBox}>
-                <QRCode value="GOLDAPP-WALLET-1607" size={58} backgroundColor="#FFFFFF" color="#111827" />
+                <QRCode value="GOLDAPP-WALLET-1607" size={56} backgroundColor="#FFFFFF" color="#087C55" />
               </View>
             </PressScale>
+            <Text style={styles.scanHint}>Scanner pour payer</Text>
           </View>
-        </LinearGradient>
-      </View>
+        </View>
+      </LinearGradient>
 
       <View style={styles.actionsHeader}>
         <Text style={[styles.actionsTitle, { color: colors.text }]}>Actions rapides</Text>
@@ -529,73 +529,81 @@ function WalletForm({
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  cardStage: {
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
-    marginHorizontal: -18,
-    marginTop: 10,
-    overflow: 'hidden',
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-  },
   balanceCard: {
-    borderRadius: 10,
-    borderWidth: 0,
-    justifyContent: 'space-between',
-    minHeight: 185,
+    borderRadius: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignSelf: 'center',
+    marginTop: 10,
+    maxWidth: 460,
+    minHeight: 148,
     overflow: 'hidden',
-    padding: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 18,
+    position: 'relative',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 10 },
+    shadowRadius: 18,
+    width: '100%',
+    elevation: 3,
   },
-  cardTopRow: {
-    alignItems: 'center',
+  balanceContent: {
+    alignItems: 'flex-end',
     flexDirection: 'row',
+    gap: 12,
     justifyContent: 'space-between',
-    zIndex: 1,
+    minHeight: 112,
+  },
+  balanceCopy: {
+    flex: 1,
+    justifyContent: 'space-between',
+    minHeight: 112,
   },
   eyeButton: {
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    borderRadius: 15,
     height: 30,
     justifyContent: 'center',
+    position: 'absolute',
+    right: 14,
+    top: 14,
     width: 30,
+    zIndex: 2,
   },
   balanceLabel: {
     color: 'rgba(255,255,255,0.92)',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '500',
   },
   balance: {
     color: '#FFFFFF',
-    fontSize: 26,
-    fontWeight: '900',
-    marginTop: 16,
-    zIndex: 1,
-  },
-  cardBottomRow: {
-    alignItems: 'flex-end',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 34,
-    zIndex: 1,
+    fontSize: 30,
+    fontWeight: '800',
+    lineHeight: 35,
   },
   details: {
-    color: 'rgba(255,255,255,0.88)',
-    fontSize: 12,
+    color: '#FFFFFF',
+    fontSize: 14,
     fontWeight: '500',
+  },
+  qrColumn: {
+    alignItems: 'center',
+    gap: 8,
+    maxWidth: 112,
+    paddingTop: 48,
   },
   qrBox: {
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderColor: 'rgba(17,24,39,0.08)',
-    borderRadius: 8,
+    borderRadius: 12,
     borderWidth: 1,
     justifyContent: 'center',
-    padding: 6,
+    padding: 8,
+  },
+  scanHint: {
+    color: 'rgba(255,255,255,0.78)',
+    fontSize: 11,
+    fontWeight: '400',
+    textAlign: 'center',
   },
   actionsGrid: {
     flexDirection: 'row',

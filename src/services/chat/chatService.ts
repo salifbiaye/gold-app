@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import { endpoints } from '../../config/api';
 import { apiRequest } from '../api/client';
 import { serviceConfig } from '../serviceConfig';
@@ -53,7 +54,7 @@ export async function sendMessage(
     return pickRandom(pool);
   }
 
-  const data = await apiRequest<{ answer: string; provider: string; model: string }>(
+  const data = await apiRequest<{ content: string; provider: string; model: string }>(
     endpoints.ai.chat,
     {
       method: 'POST',
@@ -61,5 +62,30 @@ export async function sendMessage(
     },
   );
 
-  return data.answer;
+  return data.content;
+}
+
+export async function transcribeAudio(uri: string): Promise<string> {
+  if (serviceConfig.useMock) {
+    await new Promise((r) => setTimeout(r, 1200));
+    return 'Je cherche un appartement meublé à Dakar';
+  }
+
+  const formData = new FormData();
+
+  if (Platform.OS === 'web') {
+    const blob = await fetch(uri).then((r) => r.blob());
+    formData.append('audio', blob, 'voice.webm');
+  } else {
+    const ext = uri.split('.').pop() ?? 'm4a';
+    const mime = ext === 'webm' ? 'audio/webm' : ext === 'wav' ? 'audio/wav' : 'audio/m4a';
+    formData.append('audio', { uri, type: mime, name: `voice.${ext}` } as unknown as Blob);
+  }
+
+  const data = await apiRequest<{ text: string }>(endpoints.ai.transcribe, {
+    method: 'POST',
+    body: formData,
+  });
+
+  return data.text;
 }

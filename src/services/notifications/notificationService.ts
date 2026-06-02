@@ -35,7 +35,9 @@ export async function listNotifications(limit = 50): Promise<GoldNotification[]>
 }
 
 export async function getUnreadNotificationCount(): Promise<number> {
-  if (serviceConfig.useMock) return 0;
+  // Mock : 2 non lues (cf. INITIAL_NOTIFICATIONS de NotificationsScreen) pour
+  // démontrer l'indicateur. Live : on respecte le compteur réel du backend.
+  if (serviceConfig.useMock) return 2;
   const result = await apiRequest<{ count: number }>(endpoints.notifications.unreadCount);
   return result.count;
 }

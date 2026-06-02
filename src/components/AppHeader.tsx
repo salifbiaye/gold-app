@@ -69,9 +69,7 @@ export function AppHeader() {
       >
         <Bell color={colors.text} size={20} strokeWidth={2.2} />
         {unreadCount > 0 && (
-          <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-            <Text style={styles.badgeText}>{Math.min(unreadCount, 99)}</Text>
-          </View>
+          <View style={[styles.dot, { backgroundColor: colors.danger, borderColor: colors.surface }]} />
         )}
       </TouchableOpacity>
     </View>
@@ -99,16 +97,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 44,
   },
-  badge: {
-    alignItems: 'center',
-    borderRadius: 7,
-    height: 16,
-    justifyContent: 'center',
-    minWidth: 16,
-    paddingHorizontal: 3,
+  dot: {
+    borderRadius: 5,
+    borderWidth: 1.5,
+    height: 10,
     position: 'absolute',
-    right: 4,
-    top: 4,
+    right: 9,
+    top: 9,
+    width: 10,
   },
-  badgeText: { color: '#FFF', fontSize: 9, fontWeight: '600' },
 });

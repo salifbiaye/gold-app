@@ -1,11 +1,22 @@
 import { useCallback, useRef, useState } from 'react';
-import { Animated, Platform, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import {
+  Animated,
+  Image,
+  ImageSourcePropType,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import { NavigationContext } from '@react-navigation/core';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bell, ClipboardList, Home, MessageCircle, Settings, UserRound, Wallet } from 'lucide-react-native';
+import { Bell, ClipboardList, Home, MessageCircle, Settings, Wallet } from 'lucide-react-native';
+import { AppHeader } from '../components/AppHeader';
 import { QRScannerOverlay } from '../components/QRScannerOverlay';
 import { AuthProvider } from '../context/AuthContext';
 import { ScannerProvider } from '../context/ScannerContext';
@@ -20,6 +31,7 @@ import { MapScreen } from '../screens/MapScreen';
 import { NotificationsScreen } from '../screens/NotificationsScreen';
 import { OrdersScreen } from '../screens/OrdersScreen';
 import { PaymentsScreen } from '../screens/PaymentsScreen';
+import { PiSpiScreen } from '../screens/PiSpiScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { RealEstateScreen } from '../screens/RealEstateScreen';
 import { DeliveryScreen, EducationScreen, FoodScreen, TourismScreen } from '../screens/ServiceCategoryScreen';
@@ -34,13 +46,16 @@ const Tab = createMaterialTopTabNavigator<MainTabParamList>();
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
 const SIDEBAR_W = 260;
+const piSpiLogo = require('../../assets/images/pi-spi.logo.png');
 
-const tabConfig: Record<keyof MainTabParamList, { icon: IconComponent; label: string }> = {
+type TabConfigItem = { icon: IconComponent; image?: never; label: string } | { icon?: never; image: ImageSourcePropType; label: string };
+
+const tabConfig: Record<keyof MainTabParamList, TabConfigItem> = {
   HomeStack: { icon: Home,          label: 'Accueil'   },
   Chat:      { icon: MessageCircle, label: 'Chat IA'   },
   Orders:    { icon: ClipboardList, label: 'Commandes' },
   Wallet:    { icon: Wallet,        label: 'Wallet'    },
-  Profile:   { icon: UserRound,     label: 'Profil'    },
+  PiSpi:     { image: piSpiLogo,    label: 'PI-SPI'    },
 };
 
 type SecondaryKey = 'Notifications' | 'Settings';
@@ -102,13 +117,12 @@ function MobileTabButton({
   position,
 }: {
   activeColor: string;
-  cfg: { icon: IconComponent; label: string };
+  cfg: TabConfigItem;
   inactiveColor: string;
   index: number;
   onPress: () => void;
   position: any;
 }) {
-  const Icon = cfg.icon;
   const inputRange = Object.keys(tabConfig).map((_, i) => i);
   const activeOpacity = position.interpolate({
     inputRange,
@@ -129,10 +143,10 @@ function MobileTabButton({
     >
       <View style={styles.mobileIconSlot}>
         <Animated.View style={[styles.mobileLayer, { opacity: inactiveOpacity }]}>
-          <Icon color={inactiveColor} size={25} strokeWidth={2.25} />
+          <TabIcon cfg={cfg} color={inactiveColor} />
         </Animated.View>
         <Animated.View style={[styles.mobileLayer, { opacity: activeOpacity }]}>
-          <Icon color={activeColor} size={25} strokeWidth={2.25} />
+          <TabIcon cfg={cfg} color={activeColor} active />
         </Animated.View>
       </View>
 
@@ -146,6 +160,21 @@ function MobileTabButton({
       </View>
     </TouchableOpacity>
   );
+}
+
+function TabIcon({ active, cfg, color, size = 25 }: { active?: boolean; cfg: TabConfigItem; color: string; size?: number }) {
+  if ('image' in cfg) {
+    return (
+      <Image
+        source={cfg.image}
+        resizeMode="contain"
+        style={[styles.tabImage, { height: size, opacity: active ? 1 : 0.58, width: size }]}
+      />
+    );
+  }
+
+  const Icon = cfg.icon;
+  return <Icon color={color} size={size} strokeWidth={2.25} />;
 }
 
 function MainTabs({ navigation: stackNav }: { navigation: any }) {
@@ -207,10 +236,9 @@ function MainTabs({ navigation: stackNav }: { navigation: any }) {
             <View style={styles.sidebarSection}>
               <Text style={[styles.sidebarGroupLabel, { color: colors.muted }]}>NAVIGATION</Text>
               {(
-                Object.entries(tabConfig) as [keyof MainTabParamList, { icon: IconComponent; label: string }][]
+                Object.entries(tabConfig) as [keyof MainTabParamList, TabConfigItem][]
               ).map(([key, cfg], i) => {
                 const active = desktopPage === null && activeTabIdx === i;
-                const Icon = cfg.icon;
                 return (
                   <TouchableOpacity
                     key={key}
@@ -221,7 +249,7 @@ function MainTabs({ navigation: stackNav }: { navigation: any }) {
                     activeOpacity={0.78}
                     style={[styles.sidebarItem, active && { backgroundColor: colors.primarySoft }]}
                   >
-                    <Icon color={active ? colors.primary : colors.muted} size={20} strokeWidth={2.2} />
+                    <TabIcon cfg={cfg} color={active ? colors.primary : colors.muted} active={active} size={20} />
                     <Text style={[styles.sidebarLabel, { color: active ? colors.primary : colors.text }]}>
                       {cfg.label}
                     </Text>
@@ -259,6 +287,20 @@ function MainTabs({ navigation: stackNav }: { navigation: any }) {
 
       {/* ── Content area ─────────────────────────────────────────── */}
       <View style={styles.content}>
+        {!isDesktop && !desktopPage ? (
+          <View
+            style={[
+              styles.mobileHeader,
+              {
+                backgroundColor: colors.background,
+                borderBottomColor: colors.border,
+                paddingTop: insets.top + 4,
+              },
+            ]}
+          >
+            <AppHeader />
+          </View>
+        ) : null}
         <View style={styles.tabsBody}>
           {/* Desktop: secondary screens render inline (sidebar stays visible) */}
           {isDesktop && DesktopSecondaryContent ? (
@@ -318,7 +360,7 @@ function MainTabs({ navigation: stackNav }: { navigation: any }) {
               <Tab.Screen name="Chat"      component={ChatScreen}      />
               <Tab.Screen name="Orders"    component={OrdersScreen}    />
               <Tab.Screen name="Wallet"    component={WalletScreen}    />
-              <Tab.Screen name="Profile"   component={ProfileScreen}   />
+              <Tab.Screen name="PiSpi"     component={PiSpiScreen}     />
             </Tab.Navigator>
           )}
         </View>
@@ -410,6 +452,10 @@ const styles = StyleSheet.create({
 
   /* ── Content ────────────────────────────────────────────────── */
   content:  { flex: 1, minWidth: 0 },
+  mobileHeader: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 20,
+  },
   tabsBody: { flex: 1 },
 
   /* ── Mobile bottom bar ──────────────────────────────────────── */
@@ -451,5 +497,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     width: '100%',
+  },
+  tabImage: {
+    borderRadius: 4,
   },
 });

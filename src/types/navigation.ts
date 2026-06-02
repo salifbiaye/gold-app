@@ -25,5 +25,5 @@ export type MainTabParamList = {
   Chat: undefined;
   Orders: undefined;
   Wallet: undefined;
-  Profile: undefined;
+  PiSpi: undefined;
 };

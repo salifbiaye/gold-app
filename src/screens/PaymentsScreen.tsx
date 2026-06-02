@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ChevronDown, ChevronRight, WalletCards } from 'lucide-react-native';
 import { HeaderBar } from '../components/HeaderBar';
@@ -15,6 +15,7 @@ import { useRepositoryQuery } from '../hooks/useRepositoryQuery';
 import { colors as appColors } from '../theme/colors';
 
 type DrawerFields = Record<string, string[]>;
+const piSpiLogo = require('../../assets/images/pi-spi.logo.png');
 
 const DRAWER_FIELDS: DrawerFields = {
   merchant: ['Code ou numéro marchand', 'Montant (FCFA)'],
@@ -79,8 +80,12 @@ export function PaymentsScreen() {
                 activeOpacity={0.82}
                 onPress={() => toggle(item.id)}
               >
-                <View style={[styles.iconBox, { backgroundColor: `${item.color}18` }]}>
-                  <Icon color={item.color} size={22} />
+                <View style={[styles.iconBox, { backgroundColor: `${item.color}24` }]}>
+                  {item.id === 'transfer' ? (
+                    <Image source={piSpiLogo} resizeMode="contain" style={styles.piSpiLogo} />
+                  ) : (
+                    <Icon color={item.color} size={26} strokeWidth={2.2} />
+                  )}
                 </View>
                 <View style={styles.copy}>
                   <Text style={styles.title}>{item.label}</Text>
@@ -162,10 +167,14 @@ function createStyles(colors: typeof appColors) {
     },
     iconBox: {
       alignItems: 'center',
-      borderRadius: 10,
-      height: 42,
+      borderRadius: 18,
+      height: 52,
       justifyContent: 'center',
-      width: 42,
+      width: 52,
+    },
+    piSpiLogo: {
+      height: 30,
+      width: 30,
     },
     copy: {
       flex: 1,
@@ -223,4 +232,3 @@ function createStyles(colors: typeof appColors) {
     },
   });
 }
-

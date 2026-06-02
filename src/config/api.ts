@@ -98,5 +98,6 @@ export const endpoints = {
   ai: {
     chercher: '/ai/chercher',
     chat: '/ai/chat',
+    transcribe: '/ai/transcribe',
   },
 };

@@ -1,3 +1,4 @@
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { Fragment, useEffect } from 'react';
 import { Platform } from 'react-native';
@@ -6,8 +7,13 @@ import { ThemeProvider } from '../src/context/ThemeContext';
 import { WebSessionProvider } from '../src/context/WebSessionContext';
 import { tryRestoreSession } from '../src/services/api/client';
 import { tokenStore } from '../src/services/auth/tokenStore';
+import { poppinsFonts } from '../src/theme/fonts';
 
 export default function RootLayout() {
+  // Charge Poppins (web + natif). Le patch global des <Text> est installé
+  // à l'import de ../src/theme/fonts (avant tout rendu).
+  const [fontsLoaded] = useFonts(poppinsFonts);
+
   // Restauration de session au boot :
   //  - Web    : cookie HttpOnly → POST /auth/refresh transparent
   //  - Mobile : refresh token lu depuis SecureStore (Keychain) → tryRestoreSession
@@ -25,6 +31,9 @@ export default function RootLayout() {
       }
     })();
   }, []);
+
+  // On attend les polices pour éviter un flash en police système.
+  if (!fontsLoaded) return null;
 
   const navigation = <Stack screenOptions={{ headerShown: false }} />;
 

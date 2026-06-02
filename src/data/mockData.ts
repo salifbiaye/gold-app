@@ -1,18 +1,8 @@
 import {
-  Ambulance,
   Bike,
   Car,
-  CreditCard,
-  Pill,
-  Plane,
-  QrCode,
-  Receipt,
-  Send,
-  ShoppingCart,
-  Stethoscope,
-  WalletCards,
 } from 'lucide-react-native';
-import { materialCommunityIcon } from '../components/AppIconSet';
+import { materialIcon } from '../components/AppIconSet';
 import { colors } from '../theme/colors';
 import { IconComponent } from '../types/icon';
 
@@ -44,26 +34,27 @@ type TransportOption = IconAction & {
   price: string;
 };
 
+// Icônes & couleurs alignées exactement sur la version Flutter (gold_app).
 export const popularServices: ServiceItem[] = [
-  { id: 'transport',   label: 'Transport',   icon: materialCommunityIcon('car'),                    tint: '#0DB574', route: 'Transport'  },
-  { id: 'delivery',    label: 'Livraison',   icon: materialCommunityIcon('truck-delivery'),         tint: '#F97316', route: 'Delivery'   },
-  { id: 'real-estate', label: 'Immobilier',  icon: materialCommunityIcon('office-building'),        tint: '#6366F1', route: 'RealEstate' },
-  { id: 'health',      label: 'Santé',       icon: materialCommunityIcon('medical-bag'),            tint: '#3388F2', route: 'Health'     },
-  { id: 'food',        label: 'Alimentation',icon: materialCommunityIcon('silverware-fork-knife'),  tint: '#0DB574', route: 'Food'       },
-  { id: 'education',   label: 'Education',   icon: materialCommunityIcon('school'),                 tint: '#8C54D9', route: 'Education'  },
-  { id: 'tourism',     label: 'Tourisme',    icon: materialCommunityIcon('airplane'),               tint: '#F43F5E', route: 'Tourism'    },
-  { id: 'payments',    label: 'Paiements',   icon: materialCommunityIcon('credit-card'),            tint: '#6366F1', route: 'Payments'   },
+  { id: 'transport',   label: 'Transport',   icon: materialIcon('local-taxi'),       tint: colors.primary, route: 'Transport'  },
+  { id: 'delivery',    label: 'Livraison',   icon: materialIcon('delivery-dining'),  tint: colors.warning, route: 'Delivery'   },
+  { id: 'real-estate', label: 'Immobilier',  icon: materialIcon('apartment'),        tint: colors.blue,    route: 'RealEstate' },
+  { id: 'health',      label: 'Santé',       icon: materialIcon('medical-services'), tint: colors.teal,    route: 'Health'     },
+  { id: 'food',        label: 'Alimentation',icon: materialIcon('restaurant'),       tint: colors.primary, route: 'Food'       },
+  { id: 'education',   label: 'Education',   icon: materialIcon('school'),           tint: colors.purple,  route: 'Education'  },
+  { id: 'tourism',     label: 'Tourisme',    icon: materialIcon('flight'),           tint: colors.pink,    route: 'Tourism'    },
+  { id: 'payments',    label: 'Paiements',   icon: materialIcon('payments'),         tint: colors.blue,    route: 'Payments'   },
 ];
 
 export const walletActions: IconAction[] = [
-  { id: 'transfer', label: 'Transférer',  icon: materialCommunityIcon('send')                 },
-  { id: 'scan',     label: 'Scanner QR',  icon: materialCommunityIcon('qrcode-scan')          },
-  { id: 'pay',      label: 'Payer',       icon: materialCommunityIcon('credit-card-outline')  },
-  { id: 'withdraw', label: 'Retirer',     icon: materialCommunityIcon('download')             },
-  { id: 'topup',    label: 'Recharger',   icon: materialCommunityIcon('plus-circle-outline')  },
-  { id: 'bills',    label: 'Factures',    icon: materialCommunityIcon('receipt-text')         },
-  { id: 'credit',   label: 'Crédit tél.', icon: materialCommunityIcon('cellphone')            },
-  { id: 'more',     label: 'Plus',        icon: materialCommunityIcon('dots-horizontal')      },
+  { id: 'transfer', label: 'Transférer',  icon: materialIcon('send')                },
+  { id: 'scan',     label: 'Scanner QR',  icon: materialIcon('qr-code-scanner')     },
+  { id: 'pay',      label: 'Payer',       icon: materialIcon('payment')             },
+  { id: 'withdraw', label: 'Retirer',     icon: materialIcon('download')            },
+  { id: 'topup',    label: 'Recharger',   icon: materialIcon('add-circle-outline')  },
+  { id: 'bills',    label: 'Factures',    icon: materialIcon('receipt-long')        },
+  { id: 'credit',   label: 'Crédit tél.', icon: materialIcon('phone-android')       },
+  { id: 'more',     label: 'Plus',        icon: materialIcon('more-horiz')          },
 ];
 
 export const apartments = [
@@ -133,12 +124,12 @@ export const orders = [
 ];
 
 export const transactions: Transaction[] = [
-  { id: 't1', label: 'Paiement restaurant', meta: "Aujourd'hui · 12:45", amount: '- 8 500 FCFA', icon: materialCommunityIcon('silverware-fork-knife'), color: '#FF6848' },
-  { id: 't2', label: 'Transfert à O. Diop', meta: 'Hier · 18:30', amount: '- 25 000 FCFA', icon: materialCommunityIcon('send'), color: colors.purple },
-  { id: 't3', label: 'Recharge Orange', meta: 'Hier · 10:15', amount: '- 2 000 FCFA', icon: materialCommunityIcon('plus-circle-outline'), color: colors.primary },
-  { id: 't4', label: 'Paiement marchand', meta: '20 Mai · 14:22', amount: '- 15 500 FCFA', icon: materialCommunityIcon('credit-card'), color: colors.orange },
-  { id: 't5', label: 'Facture électricité', meta: '19 Mai · 09:10', amount: '- 18 000 FCFA', icon: materialCommunityIcon('receipt-text'), color: colors.blue },
-  { id: 't6', label: 'Retrait wallet', meta: '18 Mai · 17:45', amount: '- 30 000 FCFA', icon: materialCommunityIcon('wallet'), color: colors.primaryDark },
+  { id: 't1', label: 'Paiement restaurant', meta: "Aujourd'hui · 12:45", amount: '- 8 500 FCFA', icon: materialIcon('restaurant'), color: '#FF6848' },
+  { id: 't2', label: 'Transfert à O. Diop', meta: 'Hier · 18:30', amount: '- 25 000 FCFA', icon: materialIcon('swap-horiz'), color: colors.purple },
+  { id: 't3', label: 'Recharge Orange', meta: 'Hier · 10:15', amount: '- 2 000 FCFA', icon: materialIcon('add-circle'), color: colors.primary },
+  { id: 't4', label: 'Paiement marchand', meta: '20 Mai · 14:22', amount: '- 15 500 FCFA', icon: materialIcon('store'), color: colors.orange },
+  { id: 't5', label: 'Facture électricité', meta: '19 Mai · 09:10', amount: '- 18 000 FCFA', icon: materialIcon('receipt-long'), color: colors.blue },
+  { id: 't6', label: 'Retrait wallet', meta: '18 Mai · 17:45', amount: '- 30 000 FCFA', icon: materialIcon('account-balance-wallet'), color: colors.primaryDark },
 ];
 
 export const transportOptions: TransportOption[] = [
@@ -149,10 +140,10 @@ export const transportOptions: TransportOption[] = [
 ];
 
 export const healthServices: ServiceItem[] = [
-  { id: 'teleconsultation', label: 'Téléconsultation', icon: Stethoscope, tint: colors.danger },
-  { id: 'appointment', label: 'Prendre RDV', icon: Receipt, tint: colors.primary },
-  { id: 'pharmacy', label: 'Pharmacies', icon: Pill, tint: colors.orange },
-  { id: 'ambulance', label: 'Ambulance', icon: Ambulance, tint: colors.warning },
+  { id: 'teleconsultation', label: 'Téléconsultation', icon: materialIcon('video-call'), tint: colors.danger },
+  { id: 'appointment', label: 'Prendre RDV', icon: materialIcon('event'), tint: colors.primary },
+  { id: 'pharmacy', label: 'Pharmacies', icon: materialIcon('local-pharmacy'), tint: colors.orange },
+  { id: 'ambulance', label: 'Ambulance', icon: materialIcon('emergency'), tint: colors.warning },
 ];
 
 export const doctors = [
@@ -161,12 +152,12 @@ export const doctors = [
 ];
 
 export const paymentMenu: PaymentAction[] = [
-  { id: 'merchant', label: 'Payer un marchand', meta: 'Scanner ou saisir le code', icon: QrCode, color: '#FF6161' },
-  { id: 'bill', label: 'Payer une facture', meta: 'Eau, électricité, internet...', icon: Receipt, color: colors.blue },
-  { id: 'airtime', label: 'Crédit téléphonique', meta: 'Orange, Expresso, Free...', icon: CreditCard, color: colors.purple },
-  { id: 'transfer', label: 'Transférer (PI-SPI)', meta: 'Envoyer vers banque ou wallet', icon: Send, color: colors.primary },
-  { id: 'request', label: 'Demander un paiement', meta: 'Créer une demande', icon: WalletCards, color: '#21A7A5' },
-  { id: 'history', label: 'Historique paiements', meta: 'Voir vos transactions', icon: Receipt, color: colors.orange },
+  { id: 'merchant', label: 'Payer un marchand', meta: 'Scanner le code QR', icon: materialIcon('qr-code-scanner'), color: colors.primary },
+  { id: 'bill', label: 'Payer une facture', meta: 'Eau, électricité, internet...', icon: materialIcon('receipt-long'), color: colors.blue },
+  { id: 'airtime', label: 'Crédit téléphonique', meta: 'Orange, Expresso, Free...', icon: materialIcon('phone-android'), color: colors.purple },
+  { id: 'transfer', label: 'Transférer (PI-SPI)', meta: 'Envoyer vers banque ou wallet', icon: materialIcon('swap-horiz'), color: colors.teal },
+  { id: 'request', label: 'Demander un paiement', meta: 'Créer une demande', icon: materialIcon('request-quote'), color: colors.warning },
+  { id: 'history', label: 'Historique paiements', meta: 'Voir vos transactions', icon: materialIcon('history'), color: colors.muted },
 ];
 
 export const profileMenu = [

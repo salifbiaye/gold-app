@@ -1,18 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Modal, Platform, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import {
-  AlertCircle,
-  ArrowLeft,
-  Bell,
-  Check,
-  CheckCircle2,
-  CreditCard,
-  MoreVertical,
-  Package,
-  Wallet,
-  X,
-} from 'lucide-react-native';
+import { ArrowLeft, Bell, Check, MoreVertical, X } from 'lucide-react-native';
+import { materialIcon } from '../components/AppIconSet';
 import { Screen } from '../components/Screen';
 import { useAppTheme } from '../context/ThemeContext';
 import {
@@ -35,17 +25,17 @@ type Notif = {
 };
 
 const TYPE_META: Record<string, { icon: any; color: string }> = {
-  PAYMENT: { icon: CreditCard, color: '#FF6848' },
-  ORDER: { icon: Package, color: '#0EB56D' },
-  SECURITY: { icon: AlertCircle, color: '#F59E0B' },
-  PROMO: { icon: Bell, color: '#3388F2' },
-  SYSTEM: { icon: CheckCircle2, color: '#0EB56D' },
+  PAYMENT: { icon: materialIcon('credit-card'), color: '#FF6848' },
+  ORDER: { icon: materialIcon('inventory-2'), color: appColors.primary },
+  SECURITY: { icon: materialIcon('error-outline'), color: appColors.warning },
+  PROMO: { icon: materialIcon('notifications'), color: appColors.blue },
+  SYSTEM: { icon: materialIcon('check-circle'), color: appColors.primary },
 };
 
 const INITIAL_NOTIFICATIONS: Notif[] = [
   {
     id: 'n1',
-    icon: CreditCard,
+    icon: materialIcon('credit-card'),
     color: '#FF6848',
     title: 'Paiement debite',
     body: 'Restaurant Chez Fatou - 8 500 FCFA debite avec succes.',
@@ -54,8 +44,8 @@ const INITIAL_NOTIFICATIONS: Notif[] = [
   },
   {
     id: 'n2',
-    icon: Package,
-    color: '#0EB56D',
+    icon: materialIcon('inventory-2'),
+    color: appColors.primary,
     title: 'Commande en route',
     body: 'Ousmane Diop a pris en charge votre commande #CMD-2024-1256.',
     time: '2 h',
@@ -63,8 +53,8 @@ const INITIAL_NOTIFICATIONS: Notif[] = [
   },
   {
     id: 'n3',
-    icon: Wallet,
-    color: '#3388F2',
+    icon: materialIcon('account-balance-wallet'),
+    color: appColors.blue,
     title: 'Recharge reussie',
     body: 'Votre wallet Gold a ete recharge de 20 000 FCFA.',
     time: 'Hier',
@@ -72,8 +62,8 @@ const INITIAL_NOTIFICATIONS: Notif[] = [
   },
   {
     id: 'n4',
-    icon: CheckCircle2,
-    color: '#0EB56D',
+    icon: materialIcon('check-circle'),
+    color: appColors.primary,
     title: 'Transfert confirme',
     body: 'Transfert de 25 000 FCFA vers O. Diop confirme.',
     time: 'Hier',
@@ -81,8 +71,8 @@ const INITIAL_NOTIFICATIONS: Notif[] = [
   },
   {
     id: 'n5',
-    icon: AlertCircle,
-    color: '#F59E0B',
+    icon: materialIcon('error-outline'),
+    color: appColors.warning,
     title: 'Verification requise',
     body: 'Validez votre identite pour augmenter votre limite de transaction.',
     time: '20 mai',

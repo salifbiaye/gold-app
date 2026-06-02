@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { materialCommunityIcon } from '../components/AppIconSet';
+import { materialIcon } from '../components/AppIconSet';
 import { HeaderBar } from '../components/HeaderBar';
 import { Screen } from '../components/Screen';
 import { useAppTheme } from '../context/ThemeContext';
@@ -18,11 +18,11 @@ const TABS = [
 type TabKey = (typeof TABS)[number]['key'];
 
 const orderIcons = {
-  default: materialCommunityIcon('package-variant-closed'),
-  delivery: materialCommunityIcon('truck-delivery'),
-  food: materialCommunityIcon('silverware-fork-knife'),
-  realEstate: materialCommunityIcon('office-building'),
-  transport: materialCommunityIcon('car'),
+  default: materialIcon('store'),
+  delivery: materialIcon('shopping-basket'),
+  food: materialIcon('restaurant'),
+  realEstate: materialIcon('apartment'),
+  transport: materialIcon('local-taxi'),
 };
 
 function iconFor(order: Order) {
@@ -43,7 +43,7 @@ export function OrdersScreen() {
   const visible = tab === 'all' ? orders : orders.filter((o) => o.statusKey === tab);
 
   return (
-    <Screen>
+    <Screen edges={['left', 'right']}>
       <HeaderBar title="Mes commandes" />
 
       {/* Tabs — plain View, no nested ScrollView */}

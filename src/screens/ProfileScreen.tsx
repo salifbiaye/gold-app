@@ -160,7 +160,7 @@ export function ProfileScreen() {
 
   return (
     <Screen>
-      <HeaderBar title="Profil" />
+      <HeaderBar title="Profil" back onBack={() => navigation.goBack()} />
 
       <View style={styles.profileCard}>
         <LinearGradient colors={[colors.primary, colors.primaryDark]} style={styles.profileCover}>
@@ -611,4 +611,3 @@ function createStyles(colors: typeof appColors) {
     },
   });
 }
-

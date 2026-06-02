@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Mic } from 'lucide-react-native';
-import { AppHeader } from '../components/AppHeader';
 import { Screen } from '../components/Screen';
 import { SectionHeader } from '../components/SectionHeader';
 import { ServiceTile } from '../components/ServiceTile';
@@ -35,8 +34,7 @@ export function HomeScreen() {
   };
 
   return (
-    <Screen>
-      <AppHeader />
+    <Screen edges={['left', 'right']}>
       {/* Wallet */}
       <WalletBalanceCard />
 

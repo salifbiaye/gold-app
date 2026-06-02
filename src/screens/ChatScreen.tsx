@@ -6,6 +6,7 @@ import {
   ImageStyle,
   KeyboardAvoidingView,
   Platform,
+  RefreshControl,
   StyleSheet,
   Text,
   TextInput,
@@ -17,7 +18,7 @@ import { Mic, RefreshCcw, Send, Square } from 'lucide-react-native';
 import { HeaderBar } from '../components/HeaderBar';
 import { Screen } from '../components/Screen';
 import { useAppTheme } from '../context/ThemeContext';
-import { sendMessage as aiSendMessage } from '../services/chat/chatService';
+import { sendMessage as aiSendMessage, transcribeAudio } from '../services/chat/chatService';
 import { getApartments } from '../services/realEstate/realEstateService';
 import { useRepositoryQuery } from '../hooks/useRepositoryQuery';
 import { colors as appColors } from '../theme/colors';
@@ -46,6 +47,7 @@ export function ChatScreen() {
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [isThinking, setIsThinking] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const apartments = useRepositoryQuery(getApartments).data ?? [];
 
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -112,13 +114,27 @@ export function ChatScreen() {
       setRecordingSeconds(0);
 
       if (uri) {
-        const userMsg: Message = { id: Date.now().toString(), from: 'user', text: 'Message vocal', audioUri: uri };
+        const userMsg: Message = { id: Date.now().toString(), from: 'user', text: '🎙 Message vocal…', audioUri: uri };
         setMessages((prev) => [...prev, userMsg]);
         setIsThinking(true);
-        aiSendMessage('[message vocal]').then((reply) => {
-          setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), from: 'ai', text: reply }]);
-          setIsThinking(false);
-        });
+
+        transcribeAudio(uri)
+          .then((transcribed) => {
+            setMessages((prev) =>
+              prev.map((m) => (m.audioUri === uri ? { ...m, text: transcribed } : m)),
+            );
+            return aiSendMessage(transcribed);
+          })
+          .then((reply) => {
+            setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), from: 'ai', text: reply }]);
+            setIsThinking(false);
+          })
+          .catch(() => {
+            setMessages((prev) =>
+              prev.map((m) => (m.audioUri === uri ? { ...m, text: '⚠ Transcription échouée' } : m)),
+            );
+            setIsThinking(false);
+          });
       }
     } catch {
       setRecordingSeconds(0);
@@ -141,6 +157,13 @@ export function ChatScreen() {
     setRecordingSeconds(0);
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    refreshChat();
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    setRefreshing(false);
+  };
+
   const recordingTime = `0:${recordingSeconds.toString().padStart(2, '0')}`;
 
   const renderMessage = ({ item }: { item: Message }) => {
@@ -155,17 +178,7 @@ export function ChatScreen() {
   };
 
   return (
-    <Screen scroll={false} edges={['top', 'left', 'right', 'bottom']}>
-      <HeaderBar title="Chat IA" />
-      <View style={styles.refreshRow}>
-        <TouchableOpacity
-          activeOpacity={0.82}
-          onPress={refreshChat}
-          style={[styles.refreshButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
-        >
-          <RefreshCcw color={colors.text} size={20} strokeWidth={2.2} />
-        </TouchableOpacity>
-      </View>
+    <Screen scroll={false} edges={['left', 'right', 'bottom']}>
       <KeyboardAvoidingView style={styles.chatShell} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
         <FlatList
           ref={flatListRef}
@@ -177,7 +190,36 @@ export function ChatScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.messages}
-          onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
+              progressBackgroundColor={colors.surface}
+            />
+          }
+          onContentSizeChange={() => {
+            // Auto-scroll seulement après l'ajout de messages — sur le montage/refresh
+            // (messages = INITIAL) on reste en haut pour voir le titre + le loader pull.
+            if (messages.length > INITIAL_MESSAGES.length) {
+              flatListRef.current?.scrollToEnd({ animated: true });
+            }
+          }}
+          ListHeaderComponent={
+            <>
+              <HeaderBar title="Chat IA" />
+              <View style={styles.refreshRow}>
+                <TouchableOpacity
+                  activeOpacity={0.82}
+                  onPress={refreshChat}
+                  style={[styles.refreshButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                >
+                  <RefreshCcw color={colors.text} size={20} strokeWidth={2.2} />
+                </TouchableOpacity>
+              </View>
+            </>
+          }
           ListFooterComponent={
             <View style={styles.footer}>
               {messages.length >= 2 && (
