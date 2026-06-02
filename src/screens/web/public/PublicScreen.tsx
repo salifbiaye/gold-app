@@ -43,6 +43,11 @@ export function PublicScreen({ service }: PublicWebPageProps) {
   const titleStyle = { ...styles.title, ...(mobile ? styles.titleMobile : null) };
   const serviceImageStyle = { ...styles.serviceImage, ...(mobile ? styles.serviceImageMobile : null) };
   const watermarkStyle = { ...styles.watermark, ...(mobile ? styles.watermarkMobile : null) };
+  const subtitleStyle = { ...styles.subtitle, ...(mobile ? styles.subtitleMobile : null) };
+  const featureListStyle = { ...styles.featureList, ...(mobile ? styles.featureListMobile : null) };
+  const featureTextStyle = { ...styles.featureText, ...(mobile ? styles.featureTextMobile : null) };
+  const checkCircleStyle = { ...styles.checkCircle, ...(mobile ? styles.checkCircleMobile : null) };
+  const ctaStyle = { ...styles.cta, ...(mobile ? styles.ctaMobile : null) };
 
   return (
     <>
@@ -59,15 +64,15 @@ export function PublicScreen({ service }: PublicWebPageProps) {
 
         <View style={contentStyle}>
           <Text style={titleStyle}>{title}</Text>
-          <Text style={styles.subtitle}>{subtitle}</Text>
+          <Text style={subtitleStyle}>{subtitle}</Text>
 
-          <View style={styles.featureList}>
+          <View style={featureListStyle}>
             {features.map((feature) => (
               <View key={feature} style={styles.featureRow}>
-                <View style={styles.checkCircle}>
-                  <Check color="#FFFFFF" size={20} strokeWidth={3} />
+                <View style={checkCircleStyle}>
+                  <Check color="#FFFFFF" size={mobile ? 15 : 20} strokeWidth={3} />
                 </View>
-                <Text style={styles.featureText}>{feature}</Text>
+                <Text style={featureTextStyle}>{feature}</Text>
               </View>
             ))}
           </View>
@@ -80,7 +85,7 @@ export function PublicScreen({ service }: PublicWebPageProps) {
         )}
 
         <Link href="/connexion" asChild>
-          <Pressable style={styles.cta}>
+          <Pressable style={ctaStyle}>
             <Text style={styles.ctaText}>Commencer</Text>
             <ArrowRight color="#FFFFFF" size={18} strokeWidth={2.6} />
           </Pressable>
@@ -95,14 +100,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     flex: 1,
     fontFamily: SANS as any,
-    minHeight: '100vh' as any,
+    minHeight: '100dvh' as any,
     paddingBottom: 34,
     paddingHorizontal: 34,
     paddingTop: 60,
   },
   pageMobile: {
-    paddingHorizontal: 22,
-    paddingTop: 40,
+    minHeight: 'auto' as any,
+    paddingBottom: 24,
+    paddingHorizontal: 16,
+    paddingTop: 28,
   },
   brandRow: {
     alignItems: 'center',
@@ -140,7 +147,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   contentMobile: {
-    marginTop: 78,
+    marginTop: 54,
   },
   title: {
     color: '#202228',
@@ -149,7 +156,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
   },
   titleMobile: {
-    fontSize: 33,
+    fontSize: 22,
   },
   subtitle: {
     color: '#8D94A0',
@@ -158,9 +165,18 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     marginTop: 18,
   },
+  subtitleMobile: {
+    fontSize: 15,
+    lineHeight: 20,
+    marginTop: 16,
+  },
   featureList: {
     gap: 18,
     marginTop: 52,
+  },
+  featureListMobile: {
+    gap: 12,
+    marginTop: 28,
   },
   featureRow: {
     alignItems: 'center',
@@ -175,10 +191,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 34,
   },
+  checkCircleMobile: {
+    borderRadius: 10,
+    height: 20,
+    width: 20,
+  },
   featureText: {
     color: '#2A2D33',
     fontSize: 21,
     fontWeight: '400',
+  },
+  featureTextMobile: {
+    fontSize: 13,
+    lineHeight: 18,
   },
   watermark: {
     bottom: 142,
@@ -190,11 +215,7 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
   watermarkMobile: {
-    bottom: 112,
-    height: 130,
-    opacity: 0.06,
-    right: 18,
-    width: 130,
+    display: 'none' as any,
   },
   serviceImage: {
     borderRadius: 24,
@@ -220,6 +241,11 @@ const styles = StyleSheet.create({
     marginTop: 'auto' as any,
     width: '100%',
     zIndex: 3,
+  },
+  ctaMobile: {
+    flexShrink: 0,
+    marginTop: 30,
+    minHeight: 48,
   },
   ctaText: {
     color: '#FFFFFF',
