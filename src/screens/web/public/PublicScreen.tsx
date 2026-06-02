@@ -96,7 +96,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: SANS as any,
     minHeight: '100vh' as any,
-    overflow: 'hidden',
     paddingBottom: 34,
     paddingHorizontal: 34,
     paddingTop: 60,
@@ -109,6 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 16,
+    zIndex: 2,
   },
   aiMark: {
     alignItems: 'center',
@@ -134,8 +134,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   content: {
+    flexShrink: 1,
     marginTop: 170,
     maxWidth: 520,
+    zIndex: 2,
   },
   contentMobile: {
     marginTop: 78,
@@ -185,6 +187,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 120,
     width: 220,
+    zIndex: 0,
   },
   watermarkMobile: {
     bottom: 112,
@@ -201,6 +204,7 @@ const styles = StyleSheet.create({
     right: 46,
     top: 230,
     width: '34%',
+    zIndex: 0,
   },
   serviceImageMobile: {
     display: 'none' as any,
@@ -209,14 +213,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#09A96E',
     borderRadius: 16,
-    bottom: 34,
     flexDirection: 'row',
     gap: 10,
     height: 50,
     justifyContent: 'center',
-    left: 34,
-    position: 'absolute',
-    right: 34,
+    marginTop: 'auto' as any,
+    width: '100%',
+    zIndex: 3,
   },
   ctaText: {
     color: '#FFFFFF',
