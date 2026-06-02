@@ -306,7 +306,7 @@ export function ChatScreen() {
 
           {!isRecording && inputText.trim().length > 0 && (
             <TouchableOpacity style={styles.sendButton} activeOpacity={0.85} onPress={() => sendMessage(inputText)}>
-              <Send color="#FFFFFF" size={23} strokeWidth={2.35} />
+              <Send color="#FFFFFF" size={20} strokeWidth={2.35} />
             </TouchableOpacity>
           )}
 
@@ -317,7 +317,7 @@ export function ChatScreen() {
               onPress={toggleRecording}
             >
               <Animated.View style={{ transform: [{ scale: pulse }] }}>
-                {isRecording ? <Square color="#FFFFFF" size={23} /> : <Mic color="#FFFFFF" size={25} />}
+                {isRecording ? <Square color="#FFFFFF" size={20} /> : <Mic color="#FFFFFF" size={22} />}
               </Animated.View>
             </TouchableOpacity>
           )}
@@ -486,12 +486,14 @@ function createStyles(colors: typeof appColors) {
       alignItems: 'center',
       backgroundColor: colors.surface,
       borderColor: colors.border,
-      borderRadius: 20,
+      borderRadius: 28,
       borderWidth: 1,
       flexDirection: 'row',
       gap: 8,
       marginBottom: 8,
-      padding: 8,
+      paddingLeft: 16,
+      paddingRight: 7,
+      paddingVertical: 8,
     },
     input: {
       color: colors.text,
@@ -499,25 +501,25 @@ function createStyles(colors: typeof appColors) {
       fontSize: 15,
       fontWeight: '600',
       maxHeight: 86,
-      minHeight: 44,
-      paddingHorizontal: 10,
-      paddingVertical: 7,
+      minHeight: 40,
+      paddingHorizontal: 4,
+      paddingVertical: 6,
     },
     sendButton: {
       alignItems: 'center',
       backgroundColor: colors.primary,
-      borderRadius: 24,
-      height: 48,
+      borderRadius: 20,
+      height: 40,
       justifyContent: 'center',
-      width: 48,
+      width: 40,
     },
     micButton: {
       alignItems: 'center',
       backgroundColor: colors.primary,
-      borderRadius: 24,
-      height: 48,
+      borderRadius: 20,
+      height: 40,
       justifyContent: 'center',
-      width: 48,
+      width: 40,
     },
     micButtonRecording: {
       backgroundColor: colors.danger,
