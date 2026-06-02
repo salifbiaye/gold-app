@@ -223,8 +223,10 @@ type MiniActionProps = {
 
 function MiniAction({ icon: Icon, label, onPress }: MiniActionProps) {
   return (
-    <PressScale style={styles.actionButton} onPress={onPress} haptic="medium" scaleTo={0.9}>
-      <Icon color="#FFFFFF" size={22} strokeWidth={2.35} />
+    <PressScale style={styles.actionWrap} onPress={onPress} haptic="medium" scaleTo={0.9}>
+      <View style={styles.actionButton}>
+        <Icon color="#FFFFFF" size={25} strokeWidth={2.35} />
+      </View>
       <Text style={styles.actionLabel}>{label}</Text>
     </PressScale>
   );
@@ -413,21 +415,27 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    gap: 8,
+    justifyContent: 'space-between',
     marginTop: 14,
+  },
+  actionWrap: {
+    alignItems: 'center',
+    flex: 1,
+    gap: 8,
   },
   actionButton: {
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.18)',
-    borderRadius: 12,
-    flex: 1,
-    gap: 5,
-    paddingVertical: 9,
+    borderRadius: 13,
+    height: 54,
+    justifyContent: 'center',
+    width: 54,
   },
   actionLabel: {
     color: '#FFFFFF',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '500',
+    textAlign: 'center',
   },
   // Modal & sheet
   modalWrap: {

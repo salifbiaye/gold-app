@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import { RecordingPresets, requestRecordingPermissionsAsync, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { Mic, RefreshCcw, Send, Square } from 'lucide-react-native';
-import { HeaderBar } from '../components/HeaderBar';
 import { Screen } from '../components/Screen';
 import { useAppTheme } from '../context/ThemeContext';
 import { sendMessage as aiSendMessage, transcribeAudio } from '../services/chat/chatService';
@@ -178,11 +177,24 @@ export function ChatScreen() {
   };
 
   return (
-    <Screen scroll={false} edges={['left', 'right', 'bottom']}>
+    <Screen scroll={false} edges={['left', 'right', 'bottom']} style={styles.screenContent}>
       <KeyboardAvoidingView style={styles.chatShell} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
+        <View style={styles.chatHeaderRow}>
+          <View style={styles.headerSpacer} />
+          <Text style={styles.chatTitle}>Chat IA</Text>
+          <TouchableOpacity
+            activeOpacity={0.82}
+            onPress={refreshChat}
+            style={[styles.refreshButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          >
+            <RefreshCcw color={colors.text} size={20} strokeWidth={2.2} />
+          </TouchableOpacity>
+        </View>
+
         <FlatList
           ref={flatListRef}
           data={messages}
+          style={styles.messageList}
           keyExtractor={(item) => item.id}
           renderItem={renderMessage}
           alwaysBounceVertical
@@ -206,20 +218,6 @@ export function ChatScreen() {
               flatListRef.current?.scrollToEnd({ animated: true });
             }
           }}
-          ListHeaderComponent={
-            <>
-              <HeaderBar title="Chat IA" />
-              <View style={styles.refreshRow}>
-                <TouchableOpacity
-                  activeOpacity={0.82}
-                  onPress={refreshChat}
-                  style={[styles.refreshButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                >
-                  <RefreshCcw color={colors.text} size={20} strokeWidth={2.2} />
-                </TouchableOpacity>
-              </View>
-            </>
-          }
           ListFooterComponent={
             <View style={styles.footer}>
               {messages.length >= 2 && (
@@ -331,13 +329,31 @@ export function ChatScreen() {
 
 function createStyles(colors: typeof appColors) {
   return StyleSheet.create({
+    screenContent: {
+      flex: 1,
+    },
     chatShell: {
       flex: 1,
     },
-    refreshRow: {
-      alignItems: 'flex-end',
-      marginBottom: 2,
-      marginTop: -4,
+    messageList: {
+      flex: 1,
+    },
+    chatHeaderRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      minHeight: 50,
+      paddingTop: 4,
+    },
+    headerSpacer: {
+      height: 36,
+      width: 36,
+    },
+    chatTitle: {
+      color: colors.text,
+      fontSize: 22,
+      fontWeight: '700',
+      textAlign: 'center',
     },
     refreshButton: {
       alignItems: 'center',
@@ -474,7 +490,7 @@ function createStyles(colors: typeof appColors) {
       borderWidth: 1,
       flexDirection: 'row',
       gap: 8,
-      marginBottom: 24,
+      marginBottom: 8,
       padding: 8,
     },
     input: {

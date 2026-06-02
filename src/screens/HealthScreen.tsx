@@ -61,7 +61,7 @@ export function HealthScreen() {
   const healthServices = useRepositoryQuery(getHealthServices).data ?? [];
 
   return (
-    <Screen edges={['left', 'right']}>
+    <Screen edges={['left', 'right']} style={styles.screenContent}>
       <HeaderBar title="Santé" subtitle="Médecins, pharmacies et rendez-vous" back onBack={navigation.goBack} />
       <View style={styles.searchWrap}>
         <SearchPill placeholder="Rechercher un médecin, une pharmacie..." mode="filter" />
@@ -148,6 +148,9 @@ export function HealthScreen() {
 
 function createStyles(colors: typeof appColors) {
   return StyleSheet.create({
+    screenContent: {
+      paddingTop: 12,
+    },
     searchWrap: {
       marginTop: 8,
     },
@@ -265,4 +268,3 @@ function createStyles(colors: typeof appColors) {
     },
   });
 }
-

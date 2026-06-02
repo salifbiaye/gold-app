@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   pageMobile: {
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     minHeight: '100dvh' as any,
     paddingBottom: 28,
     paddingHorizontal: 16,
@@ -148,7 +148,9 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   contentMobile: {
-    marginTop: 42,
+    marginTop: 74,
+    maxWidth: '100%' as any,
+    width: '100%',
   },
   title: {
     color: '#202228',
@@ -157,7 +159,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
   },
   titleMobile: {
-    fontSize: 22,
+    fontSize: 30,
   },
   subtitle: {
     color: '#8D94A0',
@@ -167,9 +169,10 @@ const styles = StyleSheet.create({
     marginTop: 18,
   },
   subtitleMobile: {
-    fontSize: 15,
-    lineHeight: 20,
+    fontSize: 18,
+    lineHeight: 24,
     marginTop: 16,
+    width: '100%',
   },
   featureList: {
     gap: 18,
@@ -183,6 +186,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 18,
+    width: '100%',
   },
   checkCircle: {
     alignItems: 'center',
@@ -203,8 +207,9 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   featureTextMobile: {
-    fontSize: 13,
-    lineHeight: 18,
+    flex: 1,
+    fontSize: 16,
+    lineHeight: 21,
   },
   watermark: {
     bottom: 142,
@@ -245,7 +250,7 @@ const styles = StyleSheet.create({
   },
   ctaMobile: {
     flexShrink: 0,
-    marginTop: 42,
+    marginTop: 'auto' as any,
     minHeight: 48,
   },
   ctaText: {

@@ -188,6 +188,7 @@ function createStyles(colors: typeof appColors) {
   return StyleSheet.create({
     screenContent: {
       paddingBottom: 88,
+      paddingTop: 12,
     },
     searchWrap: {
       marginTop: 8,
@@ -324,4 +325,3 @@ function createStyles(colors: typeof appColors) {
     },
   });
 }
-
