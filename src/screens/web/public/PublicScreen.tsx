@@ -106,8 +106,9 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   pageMobile: {
-    minHeight: 'auto' as any,
-    paddingBottom: 24,
+    justifyContent: 'space-between',
+    minHeight: '100dvh' as any,
+    paddingBottom: 28,
     paddingHorizontal: 16,
     paddingTop: 28,
   },
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   contentMobile: {
-    marginTop: 54,
+    marginTop: 42,
   },
   title: {
     color: '#202228',
@@ -244,7 +245,7 @@ const styles = StyleSheet.create({
   },
   ctaMobile: {
     flexShrink: 0,
-    marginTop: 30,
+    marginTop: 42,
     minHeight: 48,
   },
   ctaText: {

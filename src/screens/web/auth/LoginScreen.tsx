@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     minHeight: 62,
+    overflow: 'hidden',
     paddingHorizontal: 16,
   },
   input: {
@@ -252,10 +253,16 @@ const styles = StyleSheet.create({
     fontFamily: SANS as any,
     fontSize: 16,
     fontWeight: '800',
+    minWidth: 0,
     outlineStyle: 'none' as never,
   },
   eyeButton: {
+    alignItems: 'center',
+    flexShrink: 0,
+    height: 40,
+    justifyContent: 'center',
     padding: 4,
+    width: 40,
   },
   error: {
     color: '#EF4444',
