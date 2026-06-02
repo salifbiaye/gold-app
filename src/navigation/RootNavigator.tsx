@@ -15,7 +15,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bell, ClipboardList, Home, MessageCircle, Settings, Wallet } from 'lucide-react-native';
+import { Bell, ClipboardList, Home, MessageCircle, Settings, User, Wallet } from 'lucide-react-native';
 import { AppHeader } from '../components/AppHeader';
 import { QRScannerOverlay } from '../components/QRScannerOverlay';
 import { AuthProvider } from '../context/AuthContext';
@@ -58,14 +58,16 @@ const tabConfig: Record<keyof MainTabParamList, TabConfigItem> = {
   PiSpi:     { image: piSpiLogo,    label: 'PI-SPI'    },
 };
 
-type SecondaryKey = 'Notifications' | 'Settings';
+type SecondaryKey = 'Profile' | 'Notifications' | 'Settings';
 
 const SECONDARY_ITEMS: { key: SecondaryKey; label: string; icon: IconComponent }[] = [
+  { key: 'Profile',       label: 'Profil',        icon: User      },
   { key: 'Notifications', label: 'Notifications', icon: Bell      },
   { key: 'Settings',      label: 'Paramètres',    icon: Settings  },
 ];
 
 const SECONDARY_SCREENS: Record<SecondaryKey, React.ComponentType<any>> = {
+  Profile:       ProfileScreen,
   Notifications: NotificationsScreen,
   Settings:      SettingsScreen,
 };
@@ -287,18 +289,22 @@ function MainTabs({ navigation: stackNav }: { navigation: any }) {
 
       {/* ── Content area ─────────────────────────────────────────── */}
       <View style={styles.content}>
-        {!isDesktop && !desktopPage ? (
+        {!desktopPage ? (
           <View
             style={[
               styles.mobileHeader,
+              isDesktop && styles.desktopHeader,
               {
                 backgroundColor: colors.background,
                 borderBottomColor: colors.border,
-                paddingTop: insets.top + 4,
+                paddingTop: insets.top + (isDesktop ? 8 : 4),
               },
             ]}
           >
-            <AppHeader />
+            <AppHeader
+              onNotificationsPress={() => handleSecondaryNav('Notifications')}
+              onProfilePress={() => handleSecondaryNav('Profile')}
+            />
           </View>
         ) : null}
         <View style={styles.tabsBody}>
@@ -455,6 +461,9 @@ const styles = StyleSheet.create({
   mobileHeader: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: 20,
+  },
+  desktopHeader: {
+    paddingHorizontal: 28,
   },
   tabsBody: { flex: 1 },
 

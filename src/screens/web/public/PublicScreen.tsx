@@ -39,6 +39,8 @@ export function PublicScreen({ service }: PublicWebPageProps) {
     ]
     : homeFeatures;
   const pageStyle = { ...styles.page, ...(mobile ? styles.pageMobile : null) };
+  const brandRowStyle = { ...styles.brandRow, ...(mobile ? styles.brandRowMobile : null) };
+  const heroStyle = { ...styles.hero, ...(mobile ? styles.heroMobile : null) };
   const contentStyle = { ...styles.content, ...(mobile ? styles.contentMobile : null) };
   const titleStyle = { ...styles.title, ...(mobile ? styles.titleMobile : null) };
   const serviceImageStyle = { ...styles.serviceImage, ...(mobile ? styles.serviceImageMobile : null) };
@@ -53,7 +55,7 @@ export function PublicScreen({ service }: PublicWebPageProps) {
     <>
       <WebSeoHead metadata={metadata} />
       <View style={pageStyle}>
-        <View style={styles.brandRow}>
+        <View style={brandRowStyle}>
           <View style={styles.aiMark}>
             <Text style={styles.aiText}>Ai</Text>
           </View>
@@ -62,19 +64,21 @@ export function PublicScreen({ service }: PublicWebPageProps) {
           </Text>
         </View>
 
-        <View style={contentStyle}>
-          <Text style={titleStyle}>{title}</Text>
-          <Text style={subtitleStyle}>{subtitle}</Text>
+        <View style={heroStyle}>
+          <View style={contentStyle}>
+            <Text style={titleStyle}>{title}</Text>
+            <Text style={subtitleStyle}>{subtitle}</Text>
 
-          <View style={featureListStyle}>
-            {features.map((feature) => (
-              <View key={feature} style={styles.featureRow}>
-                <View style={checkCircleStyle}>
-                  <Check color="#FFFFFF" size={mobile ? 15 : 20} strokeWidth={3} />
+            <View style={featureListStyle}>
+              {features.map((feature) => (
+                <View key={feature} style={styles.featureRow}>
+                  <View style={checkCircleStyle}>
+                    <Check color="#FFFFFF" size={mobile ? 15 : 20} strokeWidth={3} />
+                  </View>
+                  <Text style={featureTextStyle}>{feature}</Text>
                 </View>
-                <Text style={featureTextStyle}>{feature}</Text>
-              </View>
-            ))}
+              ))}
+            </View>
           </View>
         </View>
 
@@ -101,9 +105,9 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: SANS as any,
     minHeight: '100dvh' as any,
-    paddingBottom: 34,
-    paddingHorizontal: 34,
-    paddingTop: 60,
+    paddingBottom: 28,
+    paddingHorizontal: 40,
+    paddingTop: 42,
   },
   pageMobile: {
     justifyContent: 'flex-start',
@@ -116,7 +120,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 16,
+    marginHorizontal: 'auto' as any,
+    maxWidth: 1180,
+    width: '100%',
     zIndex: 2,
+  },
+  brandRowMobile: {
+    marginHorizontal: 0,
+    maxWidth: '100%' as any,
   },
   aiMark: {
     alignItems: 'center',
@@ -141,10 +152,27 @@ const styles = StyleSheet.create({
     color: '#0BA66D',
     fontWeight: '600',
   },
+  hero: {
+    flex: 1,
+    justifyContent: 'center',
+    marginHorizontal: 'auto' as any,
+    maxWidth: 1180,
+    paddingBottom: 24,
+    paddingTop: 24,
+    width: '100%',
+    zIndex: 2,
+  },
+  heroMobile: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    marginHorizontal: 0,
+    maxWidth: '100%' as any,
+    paddingBottom: 0,
+    paddingTop: 0,
+  },
   content: {
     flexShrink: 1,
-    marginTop: 170,
-    maxWidth: 520,
+    maxWidth: 900,
     zIndex: 2,
   },
   contentMobile: {
@@ -154,7 +182,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#202228',
-    fontSize: 38,
+    fontSize: 54,
     fontWeight: '500',
     letterSpacing: 0,
   },
@@ -163,10 +191,10 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: '#8D94A0',
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: '400',
-    lineHeight: 30,
-    marginTop: 18,
+    lineHeight: 34,
+    marginTop: 20,
   },
   subtitleMobile: {
     fontSize: 18,
@@ -175,8 +203,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   featureList: {
-    gap: 18,
-    marginTop: 52,
+    gap: 20,
+    marginTop: 46,
   },
   featureListMobile: {
     gap: 12,
@@ -203,7 +231,7 @@ const styles = StyleSheet.create({
   },
   featureText: {
     color: '#2A2D33',
-    fontSize: 21,
+    fontSize: 23,
     fontWeight: '400',
   },
   featureTextMobile: {
@@ -244,13 +272,16 @@ const styles = StyleSheet.create({
     gap: 10,
     height: 50,
     justifyContent: 'center',
-    marginTop: 'auto' as any,
+    marginHorizontal: 'auto' as any,
+    maxWidth: 1180,
     width: '100%',
     zIndex: 3,
   },
   ctaMobile: {
     flexShrink: 0,
+    marginHorizontal: 0,
     marginTop: 'auto' as any,
+    maxWidth: '100%' as any,
     minHeight: 48,
   },
   ctaText: {

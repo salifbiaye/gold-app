@@ -7,7 +7,12 @@ import { useAuth } from '../context/AuthContext';
 import { useAppTheme } from '../context/ThemeContext';
 import { getUnreadNotificationCount } from '../services/notifications/notificationService';
 
-export function AppHeader() {
+type AppHeaderProps = {
+  onNotificationsPress?: () => void;
+  onProfilePress?: () => void;
+};
+
+export function AppHeader({ onNotificationsPress, onProfilePress }: AppHeaderProps = {}) {
   const navigation = useNavigation<any>();
   const { colors } = useAppTheme();
   const { auth } = useAuth();
@@ -45,7 +50,7 @@ export function AppHeader() {
     <View style={styles.bar}>
       {/* Left: avatar + greeting + location */}
       <TouchableOpacity
-        onPress={() => navigation.navigate('Profile')}
+        onPress={onProfilePress ?? (() => navigation.navigate('Profile'))}
         activeOpacity={0.82}
         style={styles.left}
       >
@@ -63,7 +68,7 @@ export function AppHeader() {
 
       {/* Right: bell */}
       <TouchableOpacity
-        onPress={() => navigation.navigate('Notifications')}
+        onPress={onNotificationsPress ?? (() => navigation.navigate('Notifications'))}
         activeOpacity={0.8}
         style={[styles.bellBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
       >

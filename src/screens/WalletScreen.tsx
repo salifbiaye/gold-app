@@ -141,7 +141,12 @@ export function WalletScreen() {
         <View style={styles.balanceContent}>
           <View style={styles.balanceCopy}>
             <Text style={styles.balanceLabel}>Solde disponible</Text>
-            <Text style={styles.balance}>
+            <Text
+              adjustsFontSizeToFit
+              minimumFontScale={0.82}
+              numberOfLines={1}
+              style={styles.balance}
+            >
               {balanceHidden ? '......' : '125 600 FCFA'}
             </Text>
             <PressScale onPress={() => openAction('details')} haptic="light" scaleTo={0.94}>
@@ -152,7 +157,7 @@ export function WalletScreen() {
           <View style={styles.qrColumn}>
             <PressScale onPress={handleOpenScanner} haptic="medium" scaleTo={0.93}>
               <View style={styles.qrBox}>
-                <QRCode value="GOLDAPP-WALLET-1607" size={56} backgroundColor="#FFFFFF" color="#087C55" />
+                <QRCode value="GOLDAPP-WALLET-1607" size={52} backgroundColor="#FFFFFF" color="#087C55" />
               </View>
             </PressScale>
             <Text style={styles.scanHint}>Scanner pour payer</Text>
@@ -532,12 +537,10 @@ const styles = StyleSheet.create({
   balanceCard: {
     borderRadius: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    alignSelf: 'center',
     marginTop: 10,
-    maxWidth: 460,
     minHeight: 148,
     overflow: 'hidden',
-    paddingHorizontal: 14,
+    paddingHorizontal: 20,
     paddingVertical: 18,
     position: 'relative',
     shadowColor: '#000',
@@ -549,7 +552,7 @@ const styles = StyleSheet.create({
   balanceContent: {
     alignItems: 'flex-end',
     flexDirection: 'row',
-    gap: 12,
+    gap: 14,
     justifyContent: 'space-between',
     minHeight: 112,
   },
@@ -575,7 +578,7 @@ const styles = StyleSheet.create({
   },
   balance: {
     color: '#FFFFFF',
-    fontSize: 30,
+    fontSize: 29,
     fontWeight: '800',
     lineHeight: 35,
   },
@@ -587,7 +590,7 @@ const styles = StyleSheet.create({
   qrColumn: {
     alignItems: 'center',
     gap: 8,
-    maxWidth: 112,
+    minWidth: 98,
     paddingTop: 48,
   },
   qrBox: {
@@ -597,7 +600,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     justifyContent: 'center',
-    padding: 8,
+    padding: 7,
   },
   scanHint: {
     color: 'rgba(255,255,255,0.78)',
