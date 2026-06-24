@@ -90,6 +90,9 @@
       "expo-router",
       "expo-font"
     ],
+    "experiments": {
+      "baseUrl": "/i360"
+    },
     "extra": {
       "eas": {
         "projectId": "c2537864-4263-48e9-9784-3c8bdfc18b26"

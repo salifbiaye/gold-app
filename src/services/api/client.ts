@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import { apiConfig } from '../../config/api';
+import { serviceConfig } from '../serviceConfig';
 import { tokenStore } from '../auth/tokenStore';
 
 /**
@@ -42,6 +43,8 @@ export function registerUnauthorizedHandler(handler: () => void) {
 
 /** Appelé au boot de l'app web pour rétablir la session via le cookie HttpOnly. */
 export async function tryRestoreSession(): Promise<boolean> {
+  // En mode mock, aucun backend : on ne tente pas de refresh (évite les appels ratés).
+  if (serviceConfig.useMock) return false;
   return tryRefresh();
 }
 

@@ -9,3 +9,7 @@ yarn-error.log*
 .env
 .env.*
 .claude/
+
+# Artefacts de build / déploiement
+*.zip
+test-apache.*
