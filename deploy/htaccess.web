@@ -1,0 +1,45 @@
+# Modèle .htaccess pour le build web statique (expo export).
+# expo export EFFACE dist/ à chaque build -> recopier ce fichier dans dist/.htaccess après chaque export :
+#   cp deploy/htaccess.web dist/.htaccess
+# Fonctionne pour un déploiement à la racine OU en sous-dossier (cf. baseUrl dans app.json).
+
+AddDefaultCharset UTF-8
+
+# Pas de listing de dossier ("Index of /...")
+Options -Indexes
+
+RewriteEngine On
+
+# 1) Les vrais fichiers (JS, CSS, images, .html...) sont servis tels quels
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# 2) Pages .html de l'app : /connexion -> connexion.html , /services/sante -> services/sante.html
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI}.html -f
+RewriteRule ^(.*)$ $1.html [L]
+
+# 3) Route catch-all : /application/* -> application.html
+RewriteRule ^application(/.*)?$ application.html [L]
+
+# 4) Fallback : tout le reste -> index.html (routing client)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
+
+# Cache des assets statiques
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# Compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>

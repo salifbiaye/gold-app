@@ -643,7 +643,63 @@ L'APK final pèse **~31 MB** (ABI splits + R8 minification + shrinkResources act
 
 ---
 
-## 14. Décisions clés (récap)
+## 14. Déploiement web statique (Apache)
+
+Le web est exporté en **statique** (`web.output: "static"` dans `app.json`) — pas de serveur Node. Le résultat (`dist/`) se dépose tel quel sur n'importe quel Apache / nginx / hébergement mutualisé.
+
+### Build — méthode recommandée : le script
+
+Pour générer un `dist/` prêt à livrer, **appelle le script avec le nom du dossier de déploiement** :
+
+```bash
+bash build-web.sh i360          # sous-dossier /i360, mode mock (démo)
+bash build-web.sh i360 live     # sous-dossier /i360, vrai backend
+bash build-web.sh racine        # déploiement à la racine d'un (sous-)domaine
+```
+
+Le script enchaîne tout automatiquement : écrit le `baseUrl` dans `app.json` → `expo export` → **recopie le `.htaccess`** dans `dist/` → crée `<nom>.zip` → affiche les instructions de déploiement. C'est la façon sûre (elle évite le piège du `.htaccess` effacé, voir plus bas).
+
+### Build — méthode manuelle (équivalent)
+
+```bash
+# 1) régler le sous-dossier dans app.json : experiments.baseUrl = "/i360"
+# 2) exporter (démo sans backend) :
+EXPO_PUBLIC_USE_MOCK_API=true npx expo export --platform web   # → dist/
+# 3) recopier le .htaccess (expo export l'efface !) :
+cp deploy/htaccess.web dist/.htaccess
+```
+
+### ⚠️ Racine vs sous-dossier : le `baseUrl`
+
+expo-router navigue avec des **chemins absolus** (`history.pushState('/connexion')`) et le HTML référence le bundle en absolu (`/_expo/...`). Donc l'emplacement de déploiement doit être connu **au build** :
+
+| Déploiement | `app.json` → `experiments.baseUrl` | URL finale |
+|---|---|---|
+| Racine d'un (sous-)domaine | *(absent)* ou `"/"` | `https://domaine.com/` |
+| Sous-dossier | `"/i360"` | `https://domaine.com/i360/` |
+
+Un build « racine » servi dans un sous-dossier → **page blanche** (bundle 404). Un build avec `baseUrl: "/i360"` est **verrouillé** sur ce nom de dossier (le renommer casse l'app). Il n'existe **pas** de build « nom de dossier libre » avec expo-router (les liens relatifs ne suffisent pas : la navigation JS est absolue). Pour un nom libre → utiliser un **sous-domaine dédié** servi à la racine.
+
+### ⚠️ Le `.htaccess` (routing + piège)
+
+Le routing client a besoin que les URLs sans extension (`/connexion`) soient servies par le bon `.html`, avec fallback sur `index.html`. Un fichier **`dist/.htaccess`** s'en charge (réécriture, `Options -Indexes`, cache, gzip).
+
+> **PIÈGE** : `expo export` **régénère `dist/` de zéro à chaque build** → il **efface le `.htaccess`**. Il faut le **recréer après chaque export** (un modèle est versionné dans `deploy/htaccess.web` — le recopier dans `dist/` après build). Sans lui : 404 sur toutes les routes.
+
+### Côté serveur (à vérifier)
+
+- `mod_rewrite` activé (`a2enmod rewrite`)
+- `AllowOverride All` dans le `<Directory>` du VirtualHost (sinon `.htaccess` ignoré)
+- Le `.htaccess` (fichier caché) doit être **bien extrait** du zip (`unzip … -d dossier` ; sous Windows l'explorateur l'oublie parfois)
+- Déployer dans un **dossier dédié** (pas par-dessus un autre site — collisions `index.html` / `.htaccess` / dossiers de même nom)
+
+### Mode mock en prod (démo)
+
+Build avec `EXPO_PUBLIC_USE_MOCK_API=true` → aucun appel backend. Le garde dans `tryRestoreSession()` (`src/services/api/client.ts`) court-circuite le refresh JWT au boot quand `serviceConfig.useMock` est vrai (sinon `/auth/refresh` échouerait vers un backend absent). Le login utilise `authConfig.defaultCredentials`.
+
+---
+
+## 15. Décisions clés (récap)
 
 | Décision | Pourquoi |
 |---|---|
@@ -664,7 +720,7 @@ L'APK final pèse **~31 MB** (ABI splits + R8 minification + shrinkResources act
 
 ---
 
-## 15. À venir
+## 16. À venir
 
 - Biométrie : finaliser `secureSessionStore` avec expo-secure-store (Keychain / EncryptedSharedPreferences)
 - Chatbot IA : remplacer le stub par un Feign client vers Claude API
