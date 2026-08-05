@@ -20,7 +20,6 @@ import {
   HelpCircle,
   Lock,
   LogOut,
-  MapPin,
   MessageCircle,
   Phone,
   Settings,
@@ -47,44 +46,56 @@ type ProfileSection = {
   rows: string[];
 };
 
-const sections: ProfileSection[] = [
-  {
-    id: 'personal',
-    title: 'Informations personnelles',
-    icon: UserRound,
-    rows: ['Nom complet: Salif Biaye', 'Telephone: +221 77 123 45 67', 'Email: salif@goldapp.sn'],
-  },
-  {
-    id: 'addresses',
-    title: 'Mes adresses',
-    icon: MapPin,
-    rows: ['Domicile: Almadies, Dakar', 'Bureau: Point E', 'Ajouter une nouvelle adresse'],
-  },
-  {
-    id: 'payments',
-    title: 'Mes moyens de paiement',
-    icon: CreditCard,
-    rows: ['Wallet Gold App actif', 'Carte Visa terminant par 2048', 'Ajouter une carte ou un compte'],
-  },
-  {
-    id: 'security',
-    title: 'Securite',
-    icon: Lock,
-    rows: ['Code PIN active', 'Authentification biometrique', 'Changer le mot de passe'],
-  },
-  {
-    id: 'support',
-    title: 'Aide & Support',
-    icon: HelpCircle,
-    rows: ["Centre d'aide", 'Contacter le support', 'Conditions et confidentialité'],
-  },
-];
-
 const SUPPORT_ROW_ACTIONS: Record<string, string> = {
   "Centre d'aide": 'help',
   'Contacter le support': 'contact',
   'Conditions et confidentialité': 'terms',
 };
+
+function userDisplayName(user: { email?: string; fullName?: string }) {
+  return user.fullName?.trim() || user.email?.split('@')[0] || 'Utilisateur i-360';
+}
+
+function userInitials(name: string, email?: string) {
+  const source = name.trim() || email?.split('@')[0] || 'Utilisateur';
+  const parts = source.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  return source.slice(0, 2).toUpperCase();
+}
+
+function createProfileSections(user: { email: string; fullName: string; phone: string }): ProfileSection[] {
+  const name = userDisplayName(user);
+  return [
+    {
+      id: 'personal',
+      title: 'Informations personnelles',
+      icon: UserRound,
+      rows: [
+        `Nom complet: ${name}`,
+        `Telephone: ${user.phone || 'Non renseigne'}`,
+        `Email: ${user.email || 'Non renseigne'}`,
+      ],
+    },
+    {
+      id: 'payments',
+      title: 'Wallet',
+      icon: CreditCard,
+      rows: ['Wallet i-360 actif', 'Solde synchronise avec le backend'],
+    },
+    {
+      id: 'security',
+      title: 'Securite',
+      icon: Lock,
+      rows: ['Compte securise', 'Authentification biometrique disponible'],
+    },
+    {
+      id: 'support',
+      title: 'Aide & Support',
+      icon: HelpCircle,
+      rows: ["Centre d'aide", 'Contacter le support', 'Conditions et confidentialité'],
+    },
+  ];
+}
 
 export function ProfileScreen() {
   const [openSection, setOpenSection] = useState<string | null>(null);
@@ -96,6 +107,9 @@ export function ProfileScreen() {
   const navigation = useNavigation<any>();
   const { colors } = useAppTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const displayName = useMemo(() => userDisplayName(auth.user), [auth.user]);
+  const initials = useMemo(() => userInitials(displayName, auth.user.email), [auth.user.email, displayName]);
+  const sections = useMemo(() => createProfileSections(auth.user), [auth.user]);
 
   const toggleSection = (id: string) => {
     setOpenSection((current) => (current === id ? null : id));
@@ -121,9 +135,9 @@ export function ProfileScreen() {
     if (action === 'contact') {
       openSupportSheet();
     } else if (action === 'help') {
-      Linking.openURL('https://goldapp.sn/aide');
+      Linking.openURL('https://i360.sn/aide');
     } else if (action === 'terms') {
-      Linking.openURL('https://goldapp.sn/conditions');
+      Linking.openURL('https://i360.sn/conditions');
     }
   };
 
@@ -134,7 +148,7 @@ export function ProfileScreen() {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [1, 1],
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       quality: 0.85,
     });
     if (result.canceled || !result.assets[0]) return;
@@ -170,10 +184,13 @@ export function ProfileScreen() {
 
         <View style={styles.profileBody}>
           <TouchableOpacity activeOpacity={0.82} onPress={pickAvatar} style={styles.avatarAction}>
-            <Image
-              source={auth.user.avatarUrl ? { uri: auth.user.avatarUrl } : require('../../assets/images/avatar-salif.jpg')}
-              style={styles.avatar}
-            />
+            {auth.user.avatarUrl ? (
+              <Image source={{ uri: auth.user.avatarUrl }} style={styles.avatar} />
+            ) : (
+              <View style={styles.avatarInitials}>
+                <Text style={styles.avatarInitialsText}>{initials}</Text>
+              </View>
+            )}
             <View style={styles.avatarEdit}>
               {uploadingAvatar ? (
                 <ActivityIndicator color="#FFFFFF" size="small" />
@@ -183,8 +200,8 @@ export function ProfileScreen() {
             </View>
           </TouchableOpacity>
           <View style={styles.profileText}>
-            <Text style={styles.name}>Salif Biaye</Text>
-            <Text style={styles.handle}>@salif.biaye</Text>
+            <Text style={styles.name}>{displayName}</Text>
+            <Text style={styles.handle}>{auth.user.email || auth.user.phone || 'Compte i-360'}</Text>
             <View style={styles.verifiedRow}>
               <ShieldCheck color={colors.primary} size={17} strokeWidth={2.35} />
               <Text style={styles.verified}>Profil verifie</Text>
@@ -214,8 +231,8 @@ export function ProfileScreen() {
 
       <View style={styles.identityCard}>
         <View style={styles.identityCopy}>
-          <Text style={styles.identityTitle}>Compte confirme</Text>
-          <Text style={styles.identitySub}>+221 77 123 45 67 - Wallet actif</Text>
+          <Text style={styles.identityTitle}>Compte connecte</Text>
+          <Text style={styles.identitySub}>{auth.user.phone || auth.user.email || 'Informations compte indisponibles'}</Text>
         </View>
         <View style={styles.identityBadge}>
           <ShieldCheck color={colors.primary} size={20} strokeWidth={2.35} />
@@ -372,6 +389,21 @@ function createStyles(colors: typeof appColors) {
       borderWidth: 3,
       height: 80,
       width: 80,
+    },
+    avatarInitials: {
+      alignItems: 'center',
+      backgroundColor: colors.primary,
+      borderColor: '#FFFFFF',
+      borderRadius: 40,
+      borderWidth: 3,
+      height: 80,
+      justifyContent: 'center',
+      width: 80,
+    },
+    avatarInitialsText: {
+      color: '#FFFFFF',
+      fontSize: 26,
+      fontWeight: '700',
     },
     avatarAction: {
       alignSelf: 'flex-start',

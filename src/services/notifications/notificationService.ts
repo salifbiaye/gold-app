@@ -54,7 +54,7 @@ export async function createTestNotification(): Promise<GoldNotification> {
   return apiRequest<GoldNotification>(endpoints.notifications.test, {
     method: 'POST',
     body: JSON.stringify({
-      title: 'Notification GoldApp',
+      title: 'Notification i-360',
       body: 'Ton centre de notifications est connecte en temps reel.',
       type: 'SYSTEM',
     }),

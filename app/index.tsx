@@ -9,14 +9,14 @@ export default function IndexRoute() {
     return (
       <>
         <SeoHead
-          title="GoldApp · Le super-app sénégalais"
+          title="i-360 · Le super-app sénégalais"
           description="Paiements PI-SPI, transport, immobilier, santé, alimentation. Une seule app, tous tes services au Sénégal. Wallet sécurisé, transferts instantanés sans frais."
           path="/"
-          keywords="GoldApp, PI-SPI, paiement mobile Sénégal, wallet Dakar, transfert XOF, super app sénégalais, transport Dakar, immobilier Sénégal, téléconsultation"
+          keywords="i-360, PI-SPI, paiement mobile Sénégal, wallet Dakar, transfert XOF, super app sénégalais, transport Dakar, immobilier Sénégal, téléconsultation"
           schema={{
             '@context': 'https://schema.org',
             '@type': 'MobileApplication',
-            name: 'GoldApp',
+            name: 'i-360',
             operatingSystem: 'Android, iOS, Web',
             applicationCategory: 'FinanceApplication',
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'XOF' },

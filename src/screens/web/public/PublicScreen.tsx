@@ -26,13 +26,13 @@ export function PublicScreen({ service }: PublicWebPageProps) {
   const { width } = useWindowDimensions();
   const mobile = width < 720;
   const metadata = publicRouteMetadata[service?.slug ?? 'home'];
-  const title = service ? service.label : 'Super App IA';
+  const title = service ? service.label : 'i-360';
   const subtitle = service
     ? service.description
     : 'Tout ce dont vous avez besoin,\ndans une seule application.';
   const features = service
     ? [
-      'Accès simple depuis Gold App',
+      'Accès simple depuis i-360',
       'Paiements intégrés PI-SPI',
       'Suivi clair et sécurisé',
       'Support local au Sénégal',
@@ -60,7 +60,7 @@ export function PublicScreen({ service }: PublicWebPageProps) {
             <Text style={styles.aiText}>Ai</Text>
           </View>
           <Text style={styles.brandText}>
-            GOLD <Text style={styles.brandAccent}>APP</Text>
+            i-<Text style={styles.brandAccent}>360</Text>
           </Text>
         </View>
 

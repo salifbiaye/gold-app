@@ -51,15 +51,11 @@ export function biometricLabel(type: BiometricType | null) {
  * (pas de hang) — si la pop-up ou la détection échoue silencieusement on retombe
  * sur la valeur configurée par {@code securityConfig.biometric.allowWhenUnavailable}.
  *
- * En mode dev (Expo Go ne supporte pas toujours la pop-up native selon les devices),
- * la biométrie est bypassée pour permettre de tester les flows. Build un dev client
- * ou un build prod pour avoir la vraie protection.
+ * Expo Go peut rester limite sur certains devices, mais on tente quand meme
+ * l'appel natif afin de tester Face ID / empreinte pendant le developpement.
  */
 export async function requestBiometricAuth(promptMessage = 'Confirmer avec la biometrie'): Promise<boolean> {
   if (!securityConfig.biometric.enabled) return true;
-
-  // Dev mode bypass — Expo Go a un support partiel de authenticateAsync
-  if (__DEV__) return true;
 
   const capability = await getBiometricCapability();
   if (!capability.available) {

@@ -11,7 +11,7 @@ export const authConfig = {
     id: 'user-salif',
     fullName: 'Salif Biaye',
     phone: '+221 77 123 45 67',
-    email: 'salif@goldapp.sn',
+    email: 'salif@i360.sn',
     token: 'mock-gold-app-token',
     avatarUrl: null,
   },

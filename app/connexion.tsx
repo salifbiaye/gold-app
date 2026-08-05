@@ -8,8 +8,8 @@ export default function ConnexionRoute() {
   return (
     <>
       <SeoHead
-        title="Connexion · GoldApp"
-        description="Connecte-toi à GoldApp pour gérer ton wallet PI-SPI, tes commandes et tous tes services au Sénégal."
+        title="Connexion · i-360"
+        description="Connecte-toi à i-360 pour gérer ton wallet PI-SPI, tes commandes et tous tes services au Sénégal."
         path="/connexion"
       />
       <LoginScreen />

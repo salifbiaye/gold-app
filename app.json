@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Gold App",
-    "slug": "gold-app",
+    "name": "i-360",
+    "slug": "i-360",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "scheme": "goldapp",
+    "scheme": "i360",
     "splash": {
       "backgroundColor": "#EAF8EF"
     },
@@ -16,16 +16,16 @@
       "supportsTablet": true,
       "userInterfaceStyle": "automatic",
       "infoPlist": {
-        "NSCameraUsageDescription": "Autoriser Gold App à utiliser la caméra pour scanner les QR codes.",
-        "NSLocationWhenInUseUsageDescription": "Gold App utilise votre position pour afficher les services près de vous.",
-        "NSMicrophoneUsageDescription": "Gold App utilise le microphone pour les messages vocaux au Chat IA.",
-        "NSFaceIDUsageDescription": "Gold App utilise Face ID pour une connexion rapide et sécurisée.",
-        "NSContactsUsageDescription": "Gold App accède à vos contacts pour faciliter les transferts.",
-        "NSPhotoLibraryUsageDescription": "Gold App utilise votre galerie pour mettre à jour votre photo de profil."
+        "NSCameraUsageDescription": "Autoriser i-360 à utiliser la caméra pour scanner les QR codes.",
+        "NSLocationWhenInUseUsageDescription": "i-360 utilise votre position pour afficher les services près de vous.",
+        "NSMicrophoneUsageDescription": "i-360 utilise le microphone pour les messages vocaux au Chat IA.",
+        "NSFaceIDUsageDescription": "i-360 utilise Face ID pour une connexion rapide et sécurisée.",
+        "NSContactsUsageDescription": "i-360 accède à vos contacts pour faciliter les transferts.",
+        "NSPhotoLibraryUsageDescription": "i-360 utilise votre galerie pour mettre à jour votre photo de profil."
       }
     },
     "android": {
-      "package": "com.goldapp.mobile",
+      "package": "com.i360.mobile",
       "adaptiveIcon": {
         "backgroundColor": "#0EB56D"
       },
@@ -57,32 +57,37 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Autoriser Gold App à utiliser la caméra pour scanner les QR codes."
+          "cameraPermission": "Autoriser i-360 à utiliser la caméra pour scanner les QR codes."
         }
       ],
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Gold App utilise votre position pour afficher les services près de vous."
+          "locationWhenInUsePermission": "i-360 utilise votre position pour afficher les services près de vous."
         }
       ],
       [
         "expo-audio",
         {
-          "microphonePermission": "Gold App utilise le microphone pour les messages vocaux au Chat IA."
+          "microphonePermission": "i-360 utilise le microphone pour les messages vocaux au Chat IA."
         }
       ],
-      "expo-local-authentication",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "i-360 utilise Face ID pour une connexion rapide et sécurisée."
+        }
+      ],
       [
         "expo-contacts",
         {
-          "contactsPermission": "Gold App accède à vos contacts pour faciliter les transferts."
+          "contactsPermission": "i-360 accède à vos contacts pour faciliter les transferts."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Gold App utilise votre galerie pour mettre à jour votre photo de profil."
+          "photosPermission": "i-360 utilise votre galerie pour mettre à jour votre photo de profil."
         }
       ],
       "expo-notifications",

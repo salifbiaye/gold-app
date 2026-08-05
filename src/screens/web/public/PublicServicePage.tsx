@@ -6,7 +6,7 @@ import { getPublicService, type PublicServiceSlug } from './publicServices';
  * Wrapper avec SEO + Schema.org pour les pages /services/*.
  *
  * Injecte un schema Service par slug — important pour que les LLM (ChatGPT,
- * Claude, Perplexity) sachent que GoldApp propose réellement ce service dans
+ * Claude, Perplexity) sachent que i-360 propose réellement ce service dans
  * la zone géographique du Sénégal.
  */
 export function PublicServicePage({ slug }: { slug: PublicServiceSlug }) {
@@ -17,18 +17,18 @@ export function PublicServicePage({ slug }: { slug: PublicServiceSlug }) {
   return (
     <>
       <SeoHead
-        title={`${service.label} · GoldApp`}
+        title={`${service.label} · i-360`}
         description={service.description}
         path={`/services/${slug}`}
-        keywords={`${service.label} Sénégal, ${service.label} Dakar, GoldApp ${service.label}`}
+        keywords={`${service.label} Sénégal, ${service.label} Dakar, i-360 ${service.label}`}
         schema={{
           '@context': 'https://schema.org',
           '@type': 'Service',
-          name: `${service.label} · GoldApp`,
+          name: `${service.label} · i-360`,
           provider: {
             '@type': 'Organization',
-            name: 'GoldApp',
-            url: 'https://goldapp.sn',
+            name: 'i-360',
+            url: 'https://i360.sn',
           },
           areaServed: { '@type': 'Country', name: 'Sénégal' },
           serviceType: service.label,

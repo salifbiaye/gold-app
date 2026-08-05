@@ -1,0 +1,410 @@
+{
+  "info": {
+    "_postman_id": "8f4a2d7a-1f5a-4f7f-a7e4-pispi-goldapp",
+    "name": "TRESORMONEY PI-SPI - Tests",
+    "description": "Collection de test pour les APIs business TRESORMONEY / PI-SPI. Renseigner les variables d'environnement avant utilisation. Ne jamais commiter de vraies valeurs client_secret ou x-api-key.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. Obtenir token Keycloak",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "grant_type",
+              "value": "client_credentials",
+              "type": "text"
+            },
+            {
+              "key": "client_id",
+              "value": "{{keycloak_client_id}}",
+              "type": "text"
+            },
+            {
+              "key": "client_secret",
+              "value": "{{keycloak_client_secret}}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{keycloak_base_url}}/realms/{{keycloak_realm}}/protocol/openid-connect/token",
+          "host": [
+            "{{keycloak_base_url}}"
+          ],
+          "path": [
+            "realms",
+            "{{keycloak_realm}}",
+            "protocol",
+            "openid-connect",
+            "token"
+          ]
+        },
+        "description": "Recupere un access_token Keycloak avec client_credentials. Mettre les vraies valeurs dans l'environnement Postman, pas dans la collection."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Token HTTP 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "if (json.access_token) {",
+              "  pm.environment.set('access_token', json.access_token);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Paiement CASH-OUT - Initier",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{x_api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"payeurAlias\": \"{{tresor_alias}}\",\n  \"payeAlias\": \"{{client_alias}}\",\n  \"montant\": {{montant_paiement}},\n  \"motif\": \"{{motif}}\",\n  \"refInterne\": \"{{ref_interne}}\",\n  \"source\": \"{{source}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/ats-ws/api/ats-service/paiements",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "ats-ws",
+            "api",
+            "ats-service",
+            "paiements"
+          ]
+        },
+        "description": "Initie un paiement. Reponse attendue: error, message, txId, payeurNom, montant, statut = EN ATTENTE DE VERIFICATION."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Paiement init HTTP 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('txId present', function () {",
+              "  pm.expect(json.txId).to.be.a('string').and.not.empty;",
+              "});",
+              "pm.test('statut attendu', function () {",
+              "  pm.expect(json.statut).to.eql('EN ATTENTE DE VERIFICATION');",
+              "});",
+              "pm.environment.set('paiement_tx_id', json.txId);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Paiement CASH-OUT - Confirmer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{x_api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"txId\": \"{{paiement_tx_id}}\",\n  \"confirmation\": true\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/ats-ws/api/ats-service/paiements/confirmations",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "ats-ws",
+            "api",
+            "ats-service",
+            "paiements",
+            "confirmations"
+          ]
+        },
+        "description": "Confirme le paiement initie. Reponse attendue: statut = ENVOYE A PI-SPI."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Paiement confirmation HTTP 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('statut envoye', function () {",
+              "  pm.expect(json.statut).to.eql('ENVOYE A PI-SPI');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Demande de paiement CASH-IN - Initier",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{x_api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"payeurAlias\": \"{{client_alias}}\",\n  \"payeAlias\": \"{{tresor_alias}}\",\n  \"montant\": {{montant_demande}},\n  \"dateLimitePaiement\": \"{{date_limite_paiement}}\",\n  \"categorie\": \"{{categorie}}\",\n  \"motif\": \"{{motif}}\",\n  \"refDocNumero\": \"{{ref_doc_numero}}\",\n  \"refDocType\": \"{{ref_doc_type}}\",\n  \"refInterne\": \"{{ref_interne}}\",\n  \"source\": \"{{source}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/ats-ws/api/ats-service/demandes-paiements",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "ats-ws",
+            "api",
+            "ats-service",
+            "demandes-paiements"
+          ]
+        },
+        "description": "Initie une demande de paiement. Reponse attendue: numero, txId, payeurNom, montant, statut = EN ATTENTE DE VERIFICATION."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Demande init HTTP 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('txId present', function () {",
+              "  pm.expect(json.txId).to.be.a('string').and.not.empty;",
+              "});",
+              "pm.test('statut attendu', function () {",
+              "  pm.expect(json.statut).to.eql('EN ATTENTE DE VERIFICATION');",
+              "});",
+              "pm.environment.set('demande_tx_id', json.txId);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3b. Demande de paiement CASH-IN - Initier minimal",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{x_api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"payeurAlias\": \"{{client_alias}}\",\n  \"payeAlias\": \"{{tresor_alias}}\",\n  \"montant\": {{montant_demande}},\n  \"dateLimitePaiement\": \"{{date_limite_paiement}}\",\n  \"categorie\": \"FACTURE\",\n  \"refInterne\": \"REQ-{{$timestamp}}\",\n  \"source\": \"{{source}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/ats-ws/api/ats-service/demandes-paiements",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "ats-ws",
+            "api",
+            "ats-service",
+            "demandes-paiements"
+          ]
+        },
+        "description": "Variante minimale pour isoler les erreurs CASH-IN. Elle retire les champs optionnels motif/refDocNumero/refDocType et utilise une refInterne unique."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Demande init minimal HTTP 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "if (json.txId) {",
+              "  pm.environment.set('demande_tx_id', json.txId);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Demande de paiement CASH-IN - Confirmer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{x_api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"txId\": \"{{demande_tx_id}}\",\n  \"confirmation\": true\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/ats-ws/api/ats-service/demandes-paiements/confirmations",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "ats-ws",
+            "api",
+            "ats-service",
+            "demandes-paiements",
+            "confirmations"
+          ]
+        },
+        "description": "Confirme la demande de paiement initiee. Reponse attendue: statut = EN ATTENTE DE CONFIRMATION."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Demande confirmation HTTP 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('statut attendu', function () {",
+              "  pm.expect(json.statut).to.eql('EN ATTENTE DE CONFIRMATION');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Webhook notification - Exemple payload",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"PAIEMENT_RECU\",\n  \"txId\": \"{{reference_label}}\",\n  \"end2endId\": \"{{end2end_id}}\",\n  \"montant\": {{montant_paiement}},\n  \"aliasTresor\": \"{{tresor_alias}}\",\n  \"client\": \"Client Test\",\n  \"motif\": \"{{motif}}\",\n  \"dateIrrevocabilite\": \"{{date_irrevocabilite}}\",\n  \"refInterne\": null\n}"
+        },
+        "url": {
+          "raw": "{{webhook_url}}",
+          "host": [
+            "{{webhook_url}}"
+          ]
+        },
+        "description": "Exemple de payload webhook a envoyer vers une URL que vous exposez. Pour un QR, si refInterne est null et status = PAIEMENT_RECU, txId correspond au Reference Label."
+      }
+    }
+  ]
+}

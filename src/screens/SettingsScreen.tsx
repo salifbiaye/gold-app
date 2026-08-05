@@ -220,7 +220,7 @@ export function SettingsScreen() {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.version}>Gold App v1.0.0</Text>
+      <Text style={styles.version}>i-360 v1.0.0</Text>
     </Screen>
   );
 }
@@ -344,4 +344,3 @@ function createStyles(colors: typeof appColors) {
     },
   });
 }
-

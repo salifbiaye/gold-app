@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import { securityConfig } from '../../config/security';
 import type { AuthResult } from '../../types/auth';
 
-const BIOMETRIC_SESSION_KEY = 'goldapp.biometric.session';
+const BIOMETRIC_SESSION_KEY = 'i360.biometric.session';
 
 function canPersistBiometricSession() {
   return Platform.OS !== 'web' && securityConfig.biometric.enabled;
@@ -12,7 +12,7 @@ function canPersistBiometricSession() {
 function secureOptions(promptMessage: string): SecureStore.SecureStoreOptions {
   return {
     authenticationPrompt: promptMessage,
-    keychainAccessible: SecureStore.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY,
+    keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
     requireAuthentication: true,
   };
 }

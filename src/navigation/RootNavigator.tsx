@@ -228,7 +228,7 @@ function MainTabs({ navigation: stackNav }: { navigation: any }) {
           <View style={[styles.sidebarBrand, { borderBottomColor: colors.border }]}>
             <View style={[styles.brandDot, { backgroundColor: colors.primary }]} />
             <View>
-              <Text style={[styles.brandName, { color: colors.text }]}>Gold App</Text>
+              <Text style={[styles.brandName, { color: colors.text }]}>i-360</Text>
               <Text style={[styles.brandSub, { color: colors.muted }]}>Superapp Dakar</Text>
             </View>
           </View>

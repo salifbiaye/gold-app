@@ -38,6 +38,14 @@ export const endpoints = {
     airtime: '/payments/airtime',
     cashout: '/payments/cashout',
     paymentRequest: '/payments/payment-requests',
+    pispi: {
+      paymentInit: '/payments/pispi/payments/init',
+      paymentConfirm: '/payments/pispi/payments/confirm',
+      paymentRequestInit: '/payments/pispi/payment-requests/init',
+      paymentRequestConfirm: '/payments/pispi/payment-requests/confirm',
+      transactions: '/payments/pispi/transactions',
+      transactionStatus: (txIdOrRefInterne: string) => `/payments/pispi/transactions/${encodeURIComponent(txIdOrRefInterne)}`,
+    },
   },
 
   orders: {

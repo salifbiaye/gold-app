@@ -60,7 +60,7 @@ export function LoginScreen() {
               <Text style={styles.logoGhost}>G</Text>
               <Text style={styles.logoMain}>A</Text>
             </View>
-            <Text style={styles.brand}>Gold App</Text>
+            <Text style={styles.brand}>i-360</Text>
             <Text style={titleStyle}>Connexion sécurisée</Text>
             <Text style={styles.subtitle}>Accédez à votre wallet, vos services et votre assistant IA.</Text>
           </View>

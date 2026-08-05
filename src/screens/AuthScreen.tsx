@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FingerprintPattern, Lock, Phone, ScanFace, ShieldCheck } from 'lucide-react-native';
+import { Fingerprint, Lock, Phone, ScanFace, ShieldCheck } from 'lucide-react-native';
 import { authConfig } from '../config/auth';
 import { useAppTheme } from '../context/ThemeContext';
 import { loginWithBiometricSession, loginWithCredentials } from '../services/auth/authService';
@@ -70,7 +70,7 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
     }
   };
 
-  const BioIcon = biometricType === 'faceid' ? ScanFace : FingerprintPattern;
+  const BioIcon = biometricType === 'faceid' ? ScanFace : Fingerprint;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -78,10 +78,10 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           <View style={styles.topBlock}>
             <View style={styles.logoMark}>
-              <Text style={styles.logoGhost}>G</Text>
-              <Text style={styles.logoMain}>A</Text>
+              <Text style={styles.logoGhost}>360</Text>
+              <Text style={styles.logoMain}>i</Text>
             </View>
-            <Text style={styles.brand}>Gold App</Text>
+            <Text style={styles.brand}>i-360</Text>
             <Text style={styles.title}>Connexion securisee</Text>
             <Text style={styles.subtitle}>Accedez a votre wallet, vos services et votre assistant IA.</Text>
           </View>
@@ -327,4 +327,3 @@ function createStyles(colors: typeof appColors, resolvedMode: 'light' | 'dark') 
     },
   });
 }
-

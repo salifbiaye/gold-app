@@ -11,7 +11,7 @@ import { Platform } from 'react-native';
  * Perplexity, Gemini) qui privilégient ce format.
  */
 
-const SITE_URL = process.env.EXPO_PUBLIC_SITE_URL ?? 'https://goldapp.sn';
+const SITE_URL = process.env.EXPO_PUBLIC_SITE_URL ?? 'https://i360.sn';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`;
 
 type SeoHeadProps = {
@@ -39,13 +39,13 @@ export function SeoHead({
   if (Platform.OS !== 'web') return null;
 
   const canonical = `${SITE_URL}${path}`;
-  const fullTitle = title.endsWith('GoldApp') ? title : `${title} · GoldApp`;
+  const fullTitle = title.endsWith('i-360') ? title : `${title} · i-360`;
 
   // Schema.org Organization (toujours présent + schema spécifique à la page)
   const orgSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'GoldApp',
+    name: 'i-360',
     url: SITE_URL,
     logo: `${SITE_URL}/logo.png`,
     description: 'Super-app sénégalais : paiements PI-SPI, transport, immobilier, santé, alimentation, éducation, tourisme.',
@@ -62,9 +62,9 @@ export function SeoHead({
       availableLanguage: ['French', 'Wolof'],
     },
     sameAs: [
-      'https://twitter.com/goldapp_sn',
-      'https://linkedin.com/company/goldapp',
-      'https://facebook.com/goldapp.sn',
+      'https://twitter.com/i360_sn',
+      'https://linkedin.com/company/i360',
+      'https://facebook.com/i360.sn',
     ],
   };
 
@@ -87,7 +87,7 @@ export function SeoHead({
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:locale" content="fr_SN" />
-      <meta property="og:site_name" content="GoldApp" />
+      <meta property="og:site_name" content="i-360" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -115,7 +115,7 @@ export function SeoNoindex({ title }: { title?: string }) {
   if (Platform.OS !== 'web') return null;
   return (
     <Head>
-      {title && <title>{title} · GoldApp</title>}
+      {title && <title>{title} · i-360</title>}
       <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
       <meta name="googlebot" content="noindex, nofollow" />
     </Head>

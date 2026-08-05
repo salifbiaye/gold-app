@@ -3,6 +3,7 @@ import {
   Animated,
   BackHandler,
   Easing,
+  Alert,
   Platform,
   StatusBar,
   StyleSheet,
@@ -10,24 +11,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
-import { Flashlight, FlashlightOff, QrCode, ScanLine, X } from 'lucide-react-native';
-import QRCode from 'react-native-qrcode-svg';
+import { BarcodeScanningResult, CameraView, scanFromURLAsync, useCameraPermissions } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
+import { Flashlight, FlashlightOff, Image as ImageIcon, ScanLine, X } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '../context/AuthContext';
 import { useScanner } from '../context/ScannerContext';
-
-type Tab = 'scan' | 'card';
 
 export function QRScannerOverlay() {
   const { state, closeScanner } = useScanner();
   const { visible } = state;
-  const { auth } = useAuth();
   const insets = useSafeAreaInsets();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [torch, setTorch] = useState(false);
-  const [tab, setTab] = useState<Tab>('scan');
+  const [photoLoading, setPhotoLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const slideY = useRef(new Animated.Value(800)).current;
@@ -38,7 +35,7 @@ export function QRScannerOverlay() {
       setMounted(true);
       setScanned(false);
       setTorch(false);
-      setTab('scan');
+      setPhotoLoading(false);
       slideY.setValue(800);
       Animated.spring(slideY, {
         toValue: 0,
@@ -83,14 +80,58 @@ export function QRScannerOverlay() {
     closeScanner();
   };
 
+  const showPhotoError = (message: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(message);
+      return;
+    }
+    Alert.alert('QR introuvable', message);
+  };
+
+  const handlePickPhoto = async () => {
+    if (photoLoading || scanned) return;
+
+    setPhotoLoading(true);
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: false,
+        allowsMultipleSelection: false,
+        mediaTypes: ['images'],
+        quality: 1,
+      });
+
+      if (result.canceled) return;
+
+      const uri = result.assets[0]?.uri;
+      if (!uri) {
+        showPhotoError('Impossible de lire cette image.');
+        return;
+      }
+
+      const codes = await scanFromURLAsync(uri, ['qr']);
+      const qr = codes.find((item) => item.data);
+
+      if (!qr?.data) {
+        showPhotoError('Aucun QR code lisible dans cette photo.');
+        return;
+      }
+
+      setScanned(true);
+      state.onScanned?.(qr.data);
+      closeScanner();
+    } catch {
+      showPhotoError('Cette photo ne peut pas etre analysee pour le moment.');
+    } finally {
+      setPhotoLoading(false);
+    }
+  };
+
   if (!mounted) return null;
 
   const scanLineTranslateY = scanY.interpolate({
     inputRange: [0, 1],
     outputRange: [-100, 100],
   });
-
-  const myCardData = JSON.stringify({ id: auth.user.id, name: auth.user.fullName, phone: auth.user.phone });
 
   return (
     <Animated.View style={[styles.root, { transform: [{ translateY: slideY }] }]}>
@@ -100,93 +141,70 @@ export function QRScannerOverlay() {
         <TouchableOpacity style={styles.iconBtn} onPress={closeScanner}>
           <X color="#FFFFFF" size={22} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{tab === 'scan' ? 'Scanner' : 'Ma Carte'}</Text>
-        {tab === 'scan' ? (
-          <TouchableOpacity
-            style={[styles.iconBtn, torch && styles.iconBtnActive]}
-            onPress={() => setTorch((v) => !v)}
-          >
-            {torch
-              ? <Flashlight color="#FFD700" size={22} />
-              : <FlashlightOff color="#FFFFFF" size={22} />}
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.iconBtn} />
-        )}
+        <Text style={styles.headerTitle}>Scanner un QR</Text>
+        <TouchableOpacity
+          style={[styles.iconBtn, torch && styles.iconBtnActive]}
+          onPress={() => setTorch((v) => !v)}
+        >
+          {torch
+            ? <Flashlight color="#FFD700" size={22} />
+            : <FlashlightOff color="#FFFFFF" size={22} />}
+        </TouchableOpacity>
       </View>
 
-      {tab === 'scan' ? (
-        permission?.granted ? (
-          <View style={styles.cameraContainer}>
-            <CameraView
-              barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-              enableTorch={torch}
-              onBarcodeScanned={scanned ? undefined : handleScan}
-              style={styles.camera}
-            />
-            <View style={styles.overlay}>
-              <View style={styles.overlayBand} />
-              <View style={styles.overlayMiddle}>
-                <View style={styles.overlaySide} />
-                <View style={styles.frame}>
-                  <View style={[styles.corner, styles.cornerTL]} />
-                  <View style={[styles.corner, styles.cornerTR]} />
-                  <View style={[styles.corner, styles.cornerBL]} />
-                  <View style={[styles.corner, styles.cornerBR]} />
-                  <Animated.View
-                    style={[styles.scanLine, { transform: [{ translateY: scanLineTranslateY }] }]}
-                  />
-                </View>
-                <View style={styles.overlaySide} />
+      {permission?.granted ? (
+        <View style={styles.cameraContainer}>
+          <CameraView
+            barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+            enableTorch={torch}
+            onBarcodeScanned={scanned ? undefined : handleScan}
+            style={styles.camera}
+          />
+          <View style={styles.overlay}>
+            <View style={styles.overlayBand} />
+            <View style={styles.overlayMiddle}>
+              <View style={styles.overlaySide} />
+              <View style={styles.frame}>
+                <View style={[styles.corner, styles.cornerTL]} />
+                <View style={[styles.corner, styles.cornerTR]} />
+                <View style={[styles.corner, styles.cornerBL]} />
+                <View style={[styles.corner, styles.cornerBR]} />
+                <Animated.View
+                  style={[styles.scanLine, { transform: [{ translateY: scanLineTranslateY }] }]}
+                />
               </View>
-              <View style={styles.overlayBandBottom}>
-                <Text style={styles.hint}>
-                  {scanned ? '✓ QR code détecté !' : 'Placez le QR code dans le cadre'}
-                </Text>
-              </View>
+              <View style={styles.overlaySide} />
+            </View>
+            <View style={styles.overlayBandBottom}>
+              <Text style={styles.hint}>
+                {scanned ? 'QR code detecte' : 'Placez le QR code dans le cadre'}
+              </Text>
             </View>
           </View>
-        ) : (
-          <View style={styles.permWrap}>
-            <ScanLine color="#FFFFFF" size={48} strokeWidth={1.5} />
-            <Text style={styles.permTitle}>Accès caméra requis</Text>
-            <Text style={styles.permText}>
-              Autorisez la caméra pour scanner les QR codes de paiement.
-            </Text>
-            <TouchableOpacity style={styles.permBtn} onPress={requestPermission}>
-              <Text style={styles.permBtnText}>Autoriser la caméra</Text>
-            </TouchableOpacity>
-          </View>
-        )
+        </View>
       ) : (
-        <View style={styles.cardWrap}>
-          <View style={styles.qrCard}>
-            <Text style={styles.cardName}>{auth.user.fullName}</Text>
-            <Text style={styles.cardPhone}>{auth.user.phone}</Text>
-            <View style={styles.qrBox}>
-              <QRCode value={myCardData} size={200} color="#0D0D0D" backgroundColor="#FFFFFF" ecl="M" />
-            </View>
-            <Text style={styles.cardHint}>Faites scanner ce code pour recevoir un paiement</Text>
-          </View>
+        <View style={styles.permWrap}>
+          <ScanLine color="#FFFFFF" size={48} strokeWidth={1.5} />
+          <Text style={styles.permTitle}>Acces camera requis</Text>
+          <Text style={styles.permText}>
+            Autorisez la camera pour scanner un QR, ou choisissez une photo depuis votre galerie.
+          </Text>
+          <TouchableOpacity style={styles.permBtn} onPress={requestPermission}>
+            <Text style={styles.permBtnText}>Autoriser la camera</Text>
+          </TouchableOpacity>
         </View>
       )}
 
       <View style={[styles.tabBar, { marginBottom: insets.bottom + 10 }]}>
         <TouchableOpacity
-          style={[styles.tabBtn, tab === 'scan' && styles.tabBtnActive]}
-          onPress={() => setTab('scan')}
+          style={[styles.tabBtn, styles.tabBtnActive]}
+          onPress={handlePickPhoto}
           activeOpacity={0.8}
         >
-          <ScanLine color={tab === 'scan' ? '#0D0D0D' : '#FFFFFF'} size={18} />
-          <Text style={[styles.tabLabel, tab === 'scan' && styles.tabLabelActive]}>Scanner</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tabBtn, tab === 'card' && styles.tabBtnActive]}
-          onPress={() => setTab('card')}
-          activeOpacity={0.8}
-        >
-          <QrCode color={tab === 'card' ? '#0D0D0D' : '#FFFFFF'} size={18} />
-          <Text style={[styles.tabLabel, tab === 'card' && styles.tabLabelActive]}>Ma Carte</Text>
+          <ImageIcon color="#0D0D0D" size={18} />
+          <Text style={[styles.tabLabel, styles.tabLabelActive]}>
+            {photoLoading ? 'Analyse en cours...' : 'Choisir une photo'}
+          </Text>
         </TouchableOpacity>
       </View>
     </Animated.View>
@@ -321,39 +339,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '600',
-  },
-  cardWrap: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  qrCard: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    gap: 6,
-    padding: 28,
-    width: '100%',
-  },
-  cardName: {
-    color: '#0D0D0D',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  cardPhone: {
-    color: '#666666',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  qrBox: {
-    marginVertical: 18,
-  },
-  cardHint: {
-    color: '#888888',
-    fontSize: 12,
-    fontWeight: '600',
-    textAlign: 'center',
   },
   tabBar: {
     alignItems: 'center',

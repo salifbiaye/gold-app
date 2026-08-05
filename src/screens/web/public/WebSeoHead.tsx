@@ -11,7 +11,7 @@ export function WebSeoHead({ metadata }: { metadata: SeoMetadata }) {
       <meta name="robots" content={metadata.indexable ? 'index,follow' : 'noindex,nofollow'} />
       <meta name="theme-color" content="#EAF8EF" />
       <meta property="og:type" content="website" />
-      <meta property="og:site_name" content="Gold App" />
+      <meta property="og:site_name" content="i-360" />
       <meta property="og:title" content={metadata.title} />
       <meta property="og:description" content={metadata.description} />
       <meta property="og:url" content={canonical} />

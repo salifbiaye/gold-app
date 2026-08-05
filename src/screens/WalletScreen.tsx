@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Check, ChevronDown, Eye, EyeOff, Search, X } from 'lucide-react-native';
+import { Check, ChevronDown, CircleDollarSign, Eye, EyeOff, Search, X } from 'lucide-react-native';
 import { OperatorLogo } from '../components/OperatorLogo';
 import { DeviceContact, useDeviceContacts } from '../hooks/useDeviceContacts';
 import QRCode from 'react-native-qrcode-svg';
@@ -157,7 +157,7 @@ export function WalletScreen() {
           <View style={styles.qrColumn}>
             <PressScale onPress={handleOpenScanner} haptic="medium" scaleTo={0.93}>
               <View style={styles.qrBox}>
-                <QRCode value="GOLDAPP-WALLET-1607" size={52} backgroundColor="#FFFFFF" color="#087C55" />
+                <QRCode value="I360-WALLET-1607" size={52} backgroundColor="#FFFFFF" color="#087C55" />
               </View>
             </PressScale>
             <Text style={styles.scanHint}>Scanner pour payer</Text>
@@ -170,7 +170,7 @@ export function WalletScreen() {
       </View>
       <View style={styles.actionsGrid}>
         {walletActions.map((action) => {
-          const Icon = action.icon;
+          const Icon = action.icon ?? CircleDollarSign;
           const iconColor = '#00a86b';
           return (
             <TouchableOpacity
@@ -211,7 +211,7 @@ export function WalletScreen() {
       />
       <View style={styles.list}>
         {visibleTransactions.map((item) => {
-          const Icon = item.icon;
+          const Icon = item.icon ?? CircleDollarSign;
           return (
             <View key={item.id} style={[styles.transaction, { backgroundColor: colors.surface }]}>
               <View style={[styles.transactionIcon, { backgroundColor: `${item.color}22` }]}>
